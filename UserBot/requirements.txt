@@ -1,0 +1,15 @@
+aiosqlite==0.17.0
+anyio==3.6.2
+databases==0.6.1
+fastapi==0.85.1
+greenlet==1.1.3.post0
+idna==3.4
+pyaes==1.6.1
+pydantic==1.10.2
+Pyrogram==2.0.59
+PySocks==1.7.1
+sniffio==1.3.0
+SQLAlchemy==1.4.42
+starlette==0.20.4
+TgCrypto==1.2.4
+typing_extensions==4.4.0

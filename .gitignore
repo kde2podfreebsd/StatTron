@@ -1,3 +1,5 @@
 venv/
-UserBot/sessions/
-UserBot/config.ini
+UserBot/TGUserAgent/sessions/
+UserBot/TGUserAgent/config.ini
+.idea
+UserBot/api/
