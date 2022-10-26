@@ -14,5 +14,9 @@ async def main(session:str):
         await app.send_message("me", "create session")
 
 
-if __name__ == "__main__":
-    asyncio.run(main(sys.argv[0]))
+asyncio.run(main(sys.argv[0]))
+# if __name__ == "__main__":
+#     if sys.argv[0]=='donqhomo':
+#         asyncio.run(main(sys.argv[0]))
+#     else:
+#         print('cant find this')

@@ -1,0 +1,22 @@
+#/etc/systemd/system/gunicorn.service
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/srv/Telemetr
+Environment=SECRET_KEY=$SECRET_KEY
+ExecStart=/srv/webserver/venv/bin/gunicorn \
+--access-logfile - \
+--workers 3 \
+--bind unix:/run/gunicorn.sock \
+--timeout 300 \
+--error-logfile /var/log/gunicorn/error.log \
+--access-logfile /var/log/gunicorn/access.log \
+--log-level debug \
+--capture-output \
+-k uvicorn.workers.UvicornWorker \
+make runapi

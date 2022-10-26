@@ -55,3 +55,11 @@ class ItemUser(ItemBase):
 
     class Config:
         orm_mode = True
+
+
+#-----------------
+
+class GetChannelsRes(UserBase):
+    channels: List[str]
+    class Config:
+        orm_mode = True
