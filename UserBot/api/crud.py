@@ -1,7 +1,6 @@
-from database import database
-from models import users, items
-import schemas
-
+from .database import database
+from .models import users, items
+from .schemas import Item, ItemCreate, User, UserCreate
 
 async def get_user(user_id: int):
     user = dict(await database.fetch_one(users.select().where(users.c.id == user_id)))
@@ -19,11 +18,11 @@ async def get_users(skip: int = 0, limit: int = 100):
     return [dict(result) for result in results]
 
 
-async def create_user(user: schemas.UserCreate):
+async def create_user(user: UserCreate):
     fake_hashed_password = user.password + "notreallyhashed"
     db_user = users.insert().values(email=user.email, hashed_password=fake_hashed_password)
     user_id = await database.execute(db_user)
-    return schemas.User(**user.dict(), id=user_id)
+    return User(**user.dict(), id=user_id)
 
 
 async def get_items(skip: int = 0, limit: int = 100):
@@ -39,7 +38,7 @@ async def get_item_user(pk: int):
     return item
 
 
-async def create_user_item(item: schemas.ItemCreate, user_id: int):
+async def create_user_item(item: ItemCreate, user_id: int):
     query = items.insert().values(**item.dict(), owner_id=user_id)
     item_id = await database.execute(query)
-    return schemas.Item(**item.dict(), id=item_id, owner_id=user_id)
+    return Item(**item.dict(), id=item_id, owner_id=user_id)

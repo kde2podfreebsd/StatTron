@@ -1,7 +1,7 @@
-import sys
 import logging
 from pyrogram import Client, filters, enums
 from typing import Optional
+
 class UserBot:
 
     channels_list = list()
@@ -21,14 +21,15 @@ class UserBot:
                 async for dialog in app.get_dialogs():
                     if str(dialog.chat.type) == "ChatType.CHANNEL":
                         self.channels_list.append(dialog.chat.username)
-                        print(dialog.chat)
+                        # print(dialog.chat)
             if len(self.channels_list) == 0:
                 return None
             else:
-                print(self.channels_list)
-                return self.channels_list
+                output = {"channels": self.channels_list, "username": self.username}
+                print(output)
+                logging.INFO(output)
+                return output
 
-            logging.INFO()
         except Exception as e:
             return e
 
@@ -36,9 +37,10 @@ class UserBot:
         try:
             async with self.app as app:
                 res = await app.join_chat(chat_id)
-                print(res)
             logging.INFO()
-            return res
+            output = {"chatUsername": res.username, "id": res.id, "accountUsername": self.username}
+            return output
+
         except Exception as e:
             return e
 
@@ -47,7 +49,7 @@ class UserBot:
             async with self.app as app:
                 res = await app.leave_chat(chat_id)
             logging.INFO()
-            return res
+            return f"Leave chat: {chat_id}"
         except Exception as e:
             return e
 
@@ -106,24 +108,10 @@ class UserBot:
         except Exception as e:
             return e
 
-
-# if __name__ == "__main__":
 # ubot = UserBot(username="donqhomo", debug=False)
-# match sys.argv[0]:
-#     case None:
-#         pass
-#     case "get_channels":
-#         ubot.loop_methods(ubot.get_channels())
-#     case "get_chat_members_count":
-#         ubot.loop_methods(ubot.get_chat_members_count(chat_id="@rozetked"))
-
-
-
-
-ubot = UserBot(username="donqhomo", debug=False)
-ubot.loop_methods(ubot.get_chat_members_count(chat_id="@rozetked"))
+# ubot.loop_methods(ubot.get_chat_members_count(chat_id="@rozetked"))
 # ubot.loop_methods(ubot.get_chat_history(chat_id="@CryptoVedma"))
 # ubot.loop_methods(ubot.get_chat_members(chat_id="@CryptoVedma"))
-ubot.loop_methods(ubot.get_channels())
+# ubot.loop_methods(ubot.get_channels())
 # ubot.loop_methods(ubot.join_chat(chat_id="@rozetked"))
 # ubot.loop_methods(ubot.leave_chat(chat_id="@rozetked"))
