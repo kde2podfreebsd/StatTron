@@ -15,13 +15,9 @@ init_session:
 
 #---------------- API ----------------
 runapi:
-	uvicorn api.api:app --reload
+	uvicorn API.api:app --reload
 
 #---------------- Database ----------------
-initdb:
-	python api/api.py
-	mv sql_app.db api/
-
 dropdb:
 	rm api/sql_app.db
 

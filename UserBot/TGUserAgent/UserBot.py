@@ -21,7 +21,7 @@ class UserBot:
                 async for dialog in app.get_dialogs():
                     if str(dialog.chat.type) == "ChatType.CHANNEL":
                         self.channels_list.append(dialog.chat.username)
-                        # print(dialog.chat)
+                        print(dialog.chat)
             if len(self.channels_list) == 0:
                 return None
             else:
@@ -108,10 +108,10 @@ class UserBot:
         except Exception as e:
             return e
 
-# ubot = UserBot(username="donqhomo", debug=False)
+ubot = UserBot(username="donqhomo", debug=False)
 # ubot.loop_methods(ubot.get_chat_members_count(chat_id="@rozetked"))
 # ubot.loop_methods(ubot.get_chat_history(chat_id="@CryptoVedma"))
 # ubot.loop_methods(ubot.get_chat_members(chat_id="@CryptoVedma"))
-# ubot.loop_methods(ubot.get_channels())
+ubot.loop_methods(ubot.get_channels())
 # ubot.loop_methods(ubot.join_chat(chat_id="@rozetked"))
 # ubot.loop_methods(ubot.leave_chat(chat_id="@rozetked"))

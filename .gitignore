@@ -2,4 +2,4 @@ venv/
 UserBot/TGUserAgent/sessions/
 UserBot/TGUserAgent/config.ini
 .idea
-UserBot/api/
+UserBot/sql_app.db
