@@ -7,7 +7,7 @@ After=network.target
 [Service]
 User=root
 Group=www-data
-WorkingDirectory=/srv/Telemetr
+WorkingDirectory=/srv/Stattron
 Environment=SECRET_KEY=$SECRET_KEY
 ExecStart=/srv/webserver/venv/bin/gunicorn \
 --access-logfile - \
