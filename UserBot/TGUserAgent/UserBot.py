@@ -1,55 +1,82 @@
+import os
 import logging
+import time
+import datetime
+
 from pyrogram import Client, filters, enums
-from typing import Optional
+from typing import Optional, List
+import asyncio
+
 
 class UserBot:
-
-    channels_list = list()
 
     def __init__(self, username: str, debug: Optional[bool] = False) -> None:
         self.username = username
         self.app = Client(f"sessions/{username}")
         if debug:
-            self.debug = logging.basicConfig(encoding='utf-8', format="[%(asctime)s] [%(name)s] [%(levelname)s] > %(message)s",level=logging.DEBUG)
+            self.debug = logging.basicConfig(encoding='utf-8',
+                                             format="[%(asctime)s] [%(name)s] [%(levelname)s] > %(message)s",
+                                             level=logging.DEBUG)
         else:
-            self.debug = logging.basicConfig(encoding='utf-8', format="[%(asctime)s] [%(name)s] [%(levelname)s] > %(message)s",level=logging.INFO)
+            self.debug = logging.basicConfig(encoding='utf-8',
+                                             format="[%(asctime)s] [%(name)s] [%(levelname)s] > %(message)s",
+                                             level=logging.INFO)
 
-    async def get_channels(self) -> channels_list:
+    async def get_channels(self):
         try:
-            self.channels_list = []
+            channels = dict()
             async with self.app as app:
+                chat_ids = list()
                 async for dialog in app.get_dialogs():
                     if str(dialog.chat.type) == "ChatType.CHANNEL":
-                        self.channels_list.append(dialog.chat.username)
-                        print(dialog.chat)
-            if len(self.channels_list) == 0:
-                return None
-            else:
-                output = {"channels": self.channels_list, "username": self.username}
-                print(output)
-                logging.INFO(output)
-                return output
+                        chat_ids.append(dialog.chat.id)
+                i = 0
+                for id in chat_ids:
+                    i += 1
+                    chat = await app.get_chat(id)
+                    if chat != None:
+                        channels[chat.id] = {
+                            "id": chat.id,
+                            "is_scam": chat.is_scam,
+                            "is_private": True if chat.username == None else False,
+                            "title": chat.title,
+                            "username": chat.username,
+                            "members_count": chat.members_count,
+                            "description": chat.description,
+                            "photo_big_file_id": chat.photo.big_file_id if chat.photo != None else None,
+                            "photo_small_file_id": chat.photo.small_file_id if chat.photo != None else None,
+                            "small_photo_path": await app.download_media(chat.photo.small_file_id) if chat.photo != None else None,
+                        }
 
+                self.channels = channels
+
+                return channels
+
+
+
+        except Exception as e:
+            return e
+
+    async def download_media(self, file_id):
+        try:
+            # TODO: сделать удаление старых фото перед скачиванием (small_photo_path)
+            async with self.app as app:
+                return await app.download_media(file_id)
         except Exception as e:
             return e
 
     async def join_chat(self, chat_id: str) -> "Result of join":
         try:
             async with self.app as app:
-                res = await app.join_chat(chat_id)
-            logging.INFO()
-            output = {"chatUsername": res.username, "id": res.id, "accountUsername": self.username}
-            return output
-
+                return await app.join_chat(chat_id)
         except Exception as e:
             return e
 
-    async def leave_chat(self, chat_id)-> "Result of leave":
+    async def leave_chat(self, chat_id) -> "Result of leave":
         try:
             async with self.app as app:
-                res = await app.leave_chat(chat_id)
-            logging.INFO()
-            return f"Leave chat: {chat_id}"
+                return await app.leave_chat(chat_id)
+
         except Exception as e:
             return e
 
@@ -57,46 +84,71 @@ class UserBot:
         try:
             async with self.app as app:
                 count = await app.get_chat_members_count(chat_id)
-                print(count)
-            logging.INFO()
-            return count
+                return count
         except Exception as e:
             return e
 
-    async def get_chat_members(self, chat_id: str) -> "Dict: 3 type members":
+    async def get_chat_history(self, chat_id: str, mentions: Optional[List[str]] = list()) -> "List of chat messages":
         try:
+            #TODO: совмещать посты с одинаковой датой публикаций
+            messages = dict()
             async with self.app as app:
-                members = []
-                async for member in app.get_chat_members(chat_id):
-                    print(member)
-                    members.append(member)
+                offset = 0
+                all_views = 0
+                all_posts = 0
+                global iterate_status
+                iterate_status = True
+                while iterate_status:
+                    async for message in app.get_chat_history(chat_id=chat_id, offset=offset, limit=200):
+                        if message.id == 1:
+                            iterate_status = False
+                            break
+                        def reaction_count(reactions):
+                            if reactions != None:
+                                count = 0
+                                reactions = list(reactions.reactions)
+                                for reaction in reactions:
+                                    count += reaction.count
+                                return count
+                            else:
+                                return 0
 
-                administrators = []
-                async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-                    administrators.append(m)
+                        def find_mentions(mentions):
+                            result = []
+                            text = message.text if message.text != None else message.caption
+                            for mention in mentions:
+                                if f'@{mention}' in str(text) or f't.me/{mention}' in str(text):
+                                    result.append(mention)
+                            if len(result) > 0:
+                                return result
+                            else:
+                                return False
 
-                bots = []
-                async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.BOTS):
-                    bots.append(m)
+                        all_posts += 1
+                        all_views += message.views
 
-            print({"members": members, "administrators": administrators, "bots": bots})
-            logging.INFO()
 
-            return {"members": members, "administrators": administrators, "bots": bots}
+                        messages[message.id] = {
+                            "id": message.id,
+                            "link": message.link,
+                            # "text": message.text if message.text != None else message.caption,
+                            "date": message.date,
+                            "views": message.views,
+                            "forward_from_chat": message.forward_from_chat.username \
+                                if message.forward_from_chat != None else False,
+                            "reactions": reaction_count(message.reactions),
+                            # "media": message.media if message.media != None else False,
+                            "mentions": find_mentions(mentions)
+                        }
+                    offset += 200
 
-        except Exception as e:
-            return e
+                avg_views = all_views/all_posts
+                members_count = await app.get_chat_members_count(chat_id)
+                er = (avg_views / int(members_count)) * 100
 
-    async def get_chat_history(self, chat_id: str) -> "List of chat messages":
-        try:
-            messages = list()
-            async with self.app as app:
-                async for message in app.get_chat_history(chat_id):
-                    messages.append(message)
 
-            print(messages)
-            logging.INFO()
-            return messages
+
+                return messages, avg_views, er
 
         except Exception as e:
             return e
@@ -104,14 +156,31 @@ class UserBot:
     def loop_methods(self, fn):
         try:
             self.app.run(fn)
-            logging.INFO()
         except Exception as e:
             return e
 
-ubot = UserBot(username="donqhomo", debug=False)
-# ubot.loop_methods(ubot.get_chat_members_count(chat_id="@rozetked"))
-# ubot.loop_methods(ubot.get_chat_history(chat_id="@CryptoVedma"))
-# ubot.loop_methods(ubot.get_chat_members(chat_id="@CryptoVedma"))
-ubot.loop_methods(ubot.get_channels())
-# ubot.loop_methods(ubot.join_chat(chat_id="@rozetked"))
-# ubot.loop_methods(ubot.leave_chat(chat_id="@rozetked"))
+
+def main():
+    ubot = UserBot(username="donqhomo", debug=False)
+
+    loop = asyncio.get_event_loop()
+    run = loop.run_until_complete
+
+    # res0 = run(ubot.download_media(file_id="AQADAgADxbAxGyB2GUoAEAMAA7R3peUW____9UWLTY68ItIABB4E"))
+
+    # res1 = run(ubot.get_chat_members_count(chat_id="@CryptoVedma"))
+    # res2 = run(ubot.get_channels())
+
+    res3 , avg_views, er = run(ubot.get_chat_history(chat_id="@CryptoVedma", mentions=['donqhomo']))
+
+    # print(f"Res1: {res1}")
+    # print(f"Res2: {res2}")
+
+    for res in res3:
+        print(res3[res], '\n\n\n')
+
+    print(avg_views)
+    print(er)
+
+
+main()

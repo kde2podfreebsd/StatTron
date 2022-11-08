@@ -5,17 +5,17 @@ freeze:
 deps:
 	pip install -r requirements.txt
 
-#---------------- UserBot ----------------
+#---------------- API ----------------
+runapi:
+	uvicorn api:app --reload
 
-bot:
-	python TGUserAgent/UserBot.py
-
-init_session:
-	python TGUserAgent/initSession.py $(s)
+#---------------- Database ----------------
+dropdb:
+	rm api.db
 
 #---------------- Clean cache ----------------
 clean:
-	rm -rf __pycache__ && rm -rf TGUserAgent/__pycache__
+	rm -rf __pycache__
 
 #---------------- Git ----------------
 gadd:

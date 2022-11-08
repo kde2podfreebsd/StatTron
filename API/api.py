@@ -1,6 +1,8 @@
 from typing import List
 from fastapi import FastAPI, HTTPException
 
+import asyncio
+
 from .database import metadata, engine, database
 
 from .crud import get_account_by_username, get_account, get_channel_account,\
@@ -8,14 +10,9 @@ create_account, create_account_channel, get_accounts, get_channels
 
 from .schemas import Account, AccountCreate, ChannelAccount, Channel, ChannelCreate
 
-# import sys
-# sys.path.append("..")
-# from UserBot.TGUserAgent.UserBot import UserBot
-
 metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 
 @app.on_event("startup")
 async def startup():
@@ -24,7 +21,6 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
-
 
 @app.post("/accounts/", response_model=Account)
 async def init_account(user: AccountCreate):

@@ -1,13 +1,16 @@
 from typing import List
 from pydantic import BaseModel
 
-
 class ChannelBase(BaseModel):
-    chat_id: str
+    is_scam: bool
+    is_private: bool
     title: str
     username: str
-    photo_small_file_id: str
     members_count: int
+    description: str
+    photo_big_file_id: str
+    photo_small_file_id: str
+    small_photo_path: str
 
 class ChannelCreate(ChannelBase):
 
