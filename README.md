@@ -1,6 +1,6 @@
 # Stattron
 
-## [TG User Agent Bot Documentation](https://github.com/bubblesortdudoser/Stattron/blob/dev/UserBot/README.md) ⬅️
+## [TG User Agent Bot Documentation](https://github.com/bubblesortdudoser/Stattron/blob/main/UserBot/README.md) ⬅️
 
 ## Installation & Preparation
 #### 1. Clone repo
