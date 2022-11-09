@@ -1,33 +1,33 @@
 #---------------- Requirements ----------------
-freeze:
+.PHONY freeze:
 	pip freeze > requirements.txt
 
-deps:
+.PHONY deps:
 	pip install -r requirements.txt
 
 #---------------- UserBot ----------------
 
-bot:
+.PHONY bot:
 	python TGUserAgent/UserBot.py
 
-init_session:
+.PHONY init_session:
 	python TGUserAgent/initSession.py $(s)
 
 #---------------- Clean cache ----------------
-clean:
+.PHONY clean:
 	rm -rf __pycache__ && rm -rf TGUserAgent/__pycache__
 
 #---------------- Git ----------------
-gadd:
+.PHONY gadd:
 	git add .
 
-gcom: # git commit -am "{com}" | com=<your comment>
+.PHONY gcom: # git commit -am "{com}" | com=<your comment>
 	git commit -am "$(com)"
 
-gpush_dev:
+.PHONY gpush_dev:
 	git push origin dev
 
-gpull:
+.PHONY gpull:
 	git pull
 
 
