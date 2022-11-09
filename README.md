@@ -73,5 +73,3 @@ Telemetr
 7 directories, 30 files
 
 ```
-
-
