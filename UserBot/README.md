@@ -1,6 +1,6 @@
 # Telegram User Agent Bot
 
-## Implemented methods
+### Implemented methods file: [Stattron/UserBot/TGUserAgent/UserBot.py](https://github.com/bubblesortdudoser/Stattron/blob/dev/UserBot/TGUserAgent/UserBot.py)
 
 ### 1. Register new account 
 ```.py
