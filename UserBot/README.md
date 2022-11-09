@@ -28,7 +28,7 @@ UserBot
 
 ```
 ------------
-### Implemented methods file: [Stattron/UserBot/TGUserAgent/UserBot.py](https://github.com/bubblesortdudoser/Stattron/blob/dev/UserBot/TGUserAgent/UserBot.py)
+### Implemented methods file: [Stattron/UserBot/TGUserAgent/UserBot.py](https://github.com/bubblesortdudoser/Stattron/blob/main/UserBot/TGUserAgent/UserBot.py)
 
 ### 1. Register new account 
 ```.py
