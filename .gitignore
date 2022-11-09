@@ -1,5 +1,7 @@
 venv/
 UserBot/TGUserAgent/sessions/
-UserBot/TGUserAgent/config.ini
-.idea
-UserBot/sql_app.db
+UserBot/TGUserAgent/database/userbot.sqlite
+UserBot/TGUserAgent/.env
+.idea/
+UserBot/TGUserAgent/downloads/
+
