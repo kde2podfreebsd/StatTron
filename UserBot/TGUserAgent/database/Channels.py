@@ -121,6 +121,45 @@ def update_members_count(channel_id: int, members_count: int):
     except Exception as e:
         return e
 
+def update_average_views(channel_id: int, average_views: float):
+    try:
+        with app.app_context():
+            if Channel.query.filter_by(channel_id=channel_id).first():
+                channel = Channel.query.filter_by(channel_id=channel_id).first()
+                channel.average_views = average_views
+                db.session.commit()
+                return {
+                    "status": True,
+                    "message": 'Channel updated'
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": 'Channel doesnt exist'
+                }
+    except Exception as e:
+        return e
+
+def update_er_all(channel_id: int, er_all: float):
+    try:
+        with app.app_context():
+            if Channel.query.filter_by(channel_id=channel_id).first():
+                channel = Channel.query.filter_by(channel_id=channel_id).first()
+                channel.er_all = er_all
+                db.session.commit()
+                return {
+                    "status": True,
+                    "message": 'Channel updated'
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": 'Channel doesnt exist'
+                }
+    except Exception as e:
+        return e
+
+
 # if __name__ == "__main__":
 #     channel_id = 123,
 #     is_scam = False,

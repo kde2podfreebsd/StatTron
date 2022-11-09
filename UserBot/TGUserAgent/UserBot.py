@@ -11,6 +11,7 @@ from typing import Optional, List
 
 from database.Channels import Channel, create_channel, get_channel, delete_channel, update_members_count
 from database.Accounts import Account, create_account, get_account, delete_account, init_session
+from database.Messages import Message, create_message
 from database.database import db, app
 
 config = load_dotenv()
@@ -162,8 +163,8 @@ class UserBot:
         except Exception as e:
             return e
 
-    async def get_chat_history(self, chat_id: str | int, mentions: Optional[List[str]] = list()) -> "List of chat messages":
-        try:
+    async def get_chat_history(self, chat_id: str | int, account: Account, mentions: Optional[List[str]] = list()) -> "List of chat messages":
+        # try:
             #TODO: совмещать посты с одинаковой датой публикаций
             messages = dict()
             async with self.app as app:
@@ -214,16 +215,55 @@ class UserBot:
                             "media": message.media if message.media != None else False,
                             "mentions": find_mentions(mentions)
                         }
+
+                        res = create_message(
+                            message_id = messages[message.id]["id"],
+                            link = messages[message.id]["link"],
+                            text = messages[message.id]["text"],
+                            date = messages[message.id]["date"],
+                            views = messages[message.id]["views"],
+                            forward_from_chat = messages[message.id]["forward_from_chat"],
+                            reaction = messages[message.id]["reactions"],
+                            media = messages[message.id]["media"],
+                            mentions = messages[message.id]["mentions"]
+                        )
+
+                        if res['status'] == True:
+                            # print(res['message'])
+                            i = 0
+                            for channel in account.channels:
+                                if chat_id == channel.channel_id:
+                                    break
+                                i += 1
+
+                            account.channels[i].messages.append(res['message'])
+                            db.session.add(account)
+                            db.session.commit()
+                        else:
+                            pass
+
                     offset += 200
 
                 avg_views = all_views/all_posts
                 members_count = await app.get_chat_members_count(chat_id)
                 er = (avg_views / int(members_count)) * 100
 
+                i = 0
+                for channel in account.channels:
+                    if chat_id == channel.channel_id:
+                        break
+                    i += 1
+
+                account.channels[i].average_views = avg_views
+                account.channels[i].er_all = er
+
+                db.session.add(account)
+                db.session.commit()
+
                 return messages, avg_views, er
 
-        except Exception as e:
-            return e
+        # except Exception as e:
+        #     return e
 
     def loop_methods(self, fn):
         try:
@@ -233,6 +273,7 @@ class UserBot:
 
 
 def main():
+    pass
     # Register new account!
     #----------------------
     # register_account = create_account(
@@ -248,8 +289,8 @@ def main():
 
     # Get account from db
     # ----------------------
-    get_account_res = get_account(username="donqhomo")
-    print(get_account_res)
+    # get_account_res = get_account(username="donqhomo")
+    # print(get_account_res)
 
     # Create session for account in db
     # ----------------------
@@ -263,11 +304,11 @@ def main():
 
     # Init User Agent Bot
     # ----------------------
-    if get_account_res['status']:
-        ubot = UserBot(username=get_account_res['account'].username, debug=False)
-
-        loop = asyncio.get_event_loop()
-        run = loop.run_until_complete
+    # if get_account_res['status']:
+    #     ubot = UserBot(username=get_account_res['account'].username, debug=False)
+    #
+    #     loop = asyncio.get_event_loop()
+    #     run = loop.run_until_complete
 
     # Get channels of account
     # ----------------------
@@ -282,8 +323,8 @@ def main():
 
     # Join chat
     # ----------------------
-    join_chat = run(ubot.join_chat(chat_id = "@rozetked", account=get_account_res['account'], category="category2"))
-    print(join_chat)
+    # join_chat = run(ubot.join_chat(chat_id = "@rozetked", account=get_account_res['account'], category="category2"))
+    # print(join_chat)
 
     # Members count (+update members_count)
     # ----------------------
@@ -297,20 +338,16 @@ def main():
     # leave_chat = delete_channel(channel_id=-1001007302005)
     # print(leave_chat)
 
-    # res3, avg_views, er = run(ubot.get_chat_history(chat_id="@CryptoVedma", mentions=['donqhomo']))
-
-    # print(f"Res1: {res1}")
-    # print(f"Res2: {res2}")
-
-    # for res in res3:
-    #     print(res3[res], '\n\n\n')
+    # Get chat History | update average views(for all times) and er(for all times)
+    # ----------------------
+    # chat_history, avg_views, er  = run(ubot.get_chat_history(chat_id=-1001301455979,account=get_account_res['account'], mentions=['donqhomo']))
+    #
+    # for res in chat_history:
+    #     print(chat_history[res], '\n\n\n')
     #
     # print(avg_views)
     # print(er)
 
-    # else:
-    #     print(get_account_res["status"])
-    #     return get_account_res["status"]
 
 
 
