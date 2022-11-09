@@ -1,5 +1,33 @@
 # Telegram User Agent Bot
 
+### Modulу architecture
+
+```.sh
+UserBot
+├── __init__.py
+├── Makefile
+├── README.md
+├── requirements.txt
+└── TGUserAgent
+    ├── database
+    │   ├── Accounts.py
+    │   ├── Channels.py
+    │   ├── database.py
+    │   ├── dbworker.py
+    │   ├── __init__.py
+    │   ├── Messages.py
+    │   └── userbot.sqlite
+    ├── downloads
+    ├── __init__.py
+    ├── messageHandler.py
+    ├── sessions
+    │   └── donqhomo.session
+    └── UserBot.py
+
+4 directories, 15 files
+
+```
+------------
 ### Implemented methods file: [Stattron/UserBot/TGUserAgent/UserBot.py](https://github.com/bubblesortdudoser/Stattron/blob/dev/UserBot/TGUserAgent/UserBot.py)
 
 ### 1. Register new account 
