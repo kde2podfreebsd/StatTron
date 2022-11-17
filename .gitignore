@@ -1,7 +1,7 @@
 venv/
-UserBot/TGUserAgent/sessions/
-UserBot/TGUserAgent/database/userbot.sqlite
-UserBot/TGUserAgent/.env
+app/userAgent/sessions/
+app/database/userbot.sqlite
+app/.env
 .idea/
-UserBot/TGUserAgent/downloads/
-
+app/userAgent/downloads/
+pg_db/

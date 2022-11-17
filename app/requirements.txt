@@ -25,3 +25,5 @@ Telethon==1.25.4
 TgCrypto==1.2.4
 typing_extensions==4.4.0
 Werkzeug==2.2.2
+psycopg2-binary
+gunicorn

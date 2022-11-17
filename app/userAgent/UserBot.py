@@ -1,18 +1,20 @@
 import os
-import logging
+import sys
 import time
+import logging
 import datetime
 import asyncio
-from dotenv import load_dotenv
-
-
 from pyrogram import Client, filters, enums
+from dotenv import load_dotenv
 from typing import Optional, List
 
-from database.Channels import Channel, create_channel, get_channel, delete_channel, update_members_count
-from database.Accounts import Account, create_account, get_account, delete_account, init_session
-from database.Messages import Message, create_message
-from database.database import db, app
+sys.path.insert(1, os.path.join(sys.path[0], '../'))
+from db import conn
+sys.path.insert(1, os.path.join(sys.path[0], '../models'))
+from Names import Names
+from Accounts import Account, create_account, get_account
+from Channels import Channel, create_channel, update_members_count
+from Messages import Message, create_message
 
 config = load_dotenv()
 
@@ -72,10 +74,8 @@ class UserBot:
 
                         if res['status'] == True:
                             account.channels.append(res['channel'])
-                            db.session.add(account)
-                            db.session.commit()
-                        else:
-                            pass
+                            conn.session.add(account)
+                            conn.session.commit()
 
                 self.channels = channels
 
@@ -132,10 +132,8 @@ class UserBot:
 
                     if res['status'] == True:
                         account.channels.append(res['channel'])
-                        db.session.add(account)
-                        db.session.commit()
-                    else:
-                        pass
+                        conn.session.add(account)
+                        conn.session.commit()
 
                 self.channels = channels
 
@@ -237,8 +235,8 @@ class UserBot:
                                 i += 1
 
                             account.channels[i].messages.append(res['message'])
-                            db.session.add(account)
-                            db.session.commit()
+                            conn.session.add(account)
+                            conn.session.commit()
                         else:
                             pass
 
@@ -257,8 +255,8 @@ class UserBot:
                 account.channels[i].average_views = avg_views
                 account.channels[i].er_all = er
 
-                db.session.add(account)
-                db.session.commit()
+                conn.session.add(account)
+                conn.session.commit()
 
                 return messages, avg_views, er
 
@@ -273,24 +271,24 @@ class UserBot:
 
 
 def main():
-    pass
+    # pass
     # Register new account!
     #----------------------
-    # register_account = create_account(
-    #     api_id=os.getenv('api_id'),
-    #     api_hash=os.getenv('api_hash'),
-    #     phone="89162107493",
-    #     username=os.getenv('username'),
-    #     host="149.154.167.50",
-    #     port=443,
-    #     public_key="-----BEGIN RSA PUBLIC KEY-----MII <...> AB-----END RSA PUBLIC KEY-----"
-    # )
-    # print(register_account)
+    register_account = create_account(
+        api_id=os.getenv('api_id'),
+        api_hash=os.getenv('api_hash'),
+        phone="89162107493",
+        username=os.getenv('username'),
+        host="149.154.167.50",
+        port=443,
+        public_key="-----BEGIN RSA PUBLIC KEY-----MII <...> AB-----END RSA PUBLIC KEY-----"
+    )
+    print(register_account)
 
     # Get account from db
     # ----------------------
-    # get_account_res = get_account(username="donqhomo")
-    # print(get_account_res)
+    get_account_res = get_account(username="donqhomo")
+    print(get_account_res)
 
     # Create session for account in db
     # ----------------------
@@ -304,17 +302,17 @@ def main():
 
     # Init User Agent Bot
     # ----------------------
-    # if get_account_res['status']:
-    #     ubot = UserBot(username=get_account_res['account'].username, debug=False)
-    #
-    #     loop = asyncio.get_event_loop()
-    #     run = loop.run_until_complete
+    if get_account_res['status']:
+        ubot = UserBot(username=get_account_res['account'].username, debug=False)
+
+        loop = asyncio.get_event_loop()
+        run = loop.run_until_complete
 
     # Get channels of account
     # ----------------------
-    #     channels = run(ubot.get_channels(account = get_account_res['account'], category="category1"))
-    #     for channel in channels:
-    #         print(channel, "\n\n")
+        channels = run(ubot.get_channels(account = get_account_res['account'], category="category1"))
+        for channel in channels:
+            print(channel, "\n\n")
 
     # Download media from telegram
     # ----------------------
@@ -328,7 +326,7 @@ def main():
 
     # Members count (+update members_count)
     # ----------------------
-    # members_count = run(ubot.get_chat_members_count(chat_id=-1001007302005))
+    # members_count = run(ubot.get_chat_members_count(chat_id=-1001464418701))
     # print(members_count)
 
     # Leave chat
