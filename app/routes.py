@@ -1,46 +1,64 @@
 import os
-from flask import jsonify, current_app
+from flask import jsonify, current_app, request
 from flask import Blueprint
 from sqlalchemy import func
 
-from models.Names import Names
-from models.Messages import Message
-from models.Accounts import Account, create_account
-from models.Channels import Channel
+from utils.util import representation_account
+from models.Accounts import Account
 
 bp = Blueprint('routes', __name__)
 
+
 @bp.route("/")
 def index():
-    return "True"
-    # return  jsonify([
-    #     {"response": current_app.config['HELLO_MESSAGE']},
-    #     {"db_path": current_app.config['SQLALCHEMY_DATABASE_URI']}
-    # ])
+    return jsonify([
+        {"response": current_app.config['HELLO_MESSAGE']},
+        {"db_path": current_app.config['SQLALCHEMY_DATABASE_URI']}
+    ])
 
-@bp.route("/name")
-def name():
-    n = Names.query.order_by(func.random()).first()
-    return jsonify({"names" : "%s = %d" % (n.name, n.amount) })
 
-# http://<ip:port>/add_random
-@bp.route("/add_random")
-def add_random():
-    n = Names()
-    n.fill_random()
-    n.save()
-    return jsonify({"added" : "%s = %d" % (n.name, n.amount)})
+@bp.route("/accounts", methods=['POST', 'GET'])
+def accounts():
+    if request.method == 'POST':
+        new_account = Account()
+        output = new_account.create(
+            api_id=request.json['api_id'],  # int
+            api_hash=request.json['api_hash'],
+            phone=request.json['phone'],
+            username=request.json['username'],
+            host=request.json['host'] if request.json['host'] is not None else None,
+            port=request.json['port'] if request.json['port'] is not None else None,  # int
+            public_key=request.json['public_key'] if request.json['public_key'] is not None else None
+        )
+        return output
 
-@bp.route("/add_account")
-def add_account():
-    register_account = create_account(
-        api_id=123,
-        api_hash="hash123",
-        phone="89162107493",
-        username="donqhomo",
-        host="149.154.167.50",
-        port=443,
-        public_key="-----BEGIN RSA PUBLIC KEY-----MII <...> AB-----END RSA PUBLIC KEY-----"
-    )
-    print(register_account)
-    return "True"
+    if request.method == 'GET':
+        accounts = Account.query.filter(Account.username is not None).all()
+        return list(map(lambda x: representation_account(x), accounts))
+
+
+@bp.route("/account/<username>", methods=['PATCH', 'GET', 'DELETE'])
+def account(username):
+    if request.method == 'GET':
+        account = Account.query.filter_by(username=username).first()
+        output = representation_account(account) if account is not None else jsonify('Account does not exist')
+        return output
+
+    if request.method == 'PATCH':
+        account = Account.query.filter_by(username=username).first()
+        if account is not None:
+            account.api_id = request.json['api_id'] if request.json['api_id'] is not None else account.api_id,  # int
+            account.api_hash = request.json['api_hash'] if request.json['api_hash'] is not None else account.api_hash,
+            account.phone = request.json['phone'] if request.json['phone'] is not None else account.phone,
+            account.username = request.json['username'] if request.json['username'] is not None else account.username,
+            account.host = request.json['host'] if request.json['host'] is not None else account.host,
+            account.port = request.json['port'] if request.json['port'] is not None else account.port,  # int
+            account.public_key = request.json['public_key'] if request.json['public_key'] is not None else account.public_key
+
+            output = account.update()
+            return output
+        else:
+            return jsonify('Account does not exist')
+
+    # if request.method == 'DELETE':
+

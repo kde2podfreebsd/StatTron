@@ -6,3 +6,4 @@ app/.env
 app/userAgent/downloads/
 pg_db/
 app/instance/
+**/__pycache__

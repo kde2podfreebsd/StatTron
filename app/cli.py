@@ -2,7 +2,6 @@ import os
 import click
 from flask import Blueprint
 
-from models.Names import Names
 from models.Messages import Message
 from models.Accounts import Account
 from models.Channels import Channel
@@ -14,7 +13,7 @@ bp = Blueprint('commands', __name__)
 @bp.cli.command("test")
 @click.option('-name', default="test_exec")
 def say_my_name(name):
-    print("say_my_name %s " % name)
+    print("test_exec %s " % name)
 
 @bp.cli.command("create_db")
 @click.option('-name', default="Noname")
