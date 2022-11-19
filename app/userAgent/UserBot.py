@@ -8,13 +8,13 @@ from pyrogram import Client, filters, enums
 from dotenv import load_dotenv
 from typing import Optional, List
 
-sys.path.insert(1, os.path.join(sys.path[0], '../'))
-from db import conn
-sys.path.insert(1, os.path.join(sys.path[0], '../models'))
-from Names import Names
-from Accounts import Account, create_account, get_account
-from Channels import Channel, create_channel, update_members_count
-from Messages import Message, create_message
+# sys.path.insert(1, os.path.join(sys.path[0], '../'))
+# from db import conn
+# sys.path.insert(1, os.path.join(sys.path[0], '../models'))
+# from Names import Names
+# from Accounts import Account, create_account, get_account
+# from Channels import Channel, create_channel, update_members_count
+# from Messages import Message, create_message
 
 config = load_dotenv()
 
@@ -302,17 +302,17 @@ def main():
 
     # Init User Agent Bot
     # ----------------------
-    if get_account_res['status']:
-        ubot = UserBot(username=get_account_res['account'].username, debug=False)
-
-        loop = asyncio.get_event_loop()
-        run = loop.run_until_complete
+    # if get_account_res['status']:
+    #     ubot = UserBot(username=get_account_res['account'].username, debug=False)
+    #
+    #     loop = asyncio.get_event_loop()
+    #     run = loop.run_until_complete
 
     # Get channels of account
     # ----------------------
-        channels = run(ubot.get_channels(account = get_account_res['account'], category="category1"))
-        for channel in channels:
-            print(channel, "\n\n")
+    #     channels = run(ubot.get_channels(account = get_account_res['account'], category="category1"))
+    #     for channel in channels:
+    #         print(channel, "\n\n")
 
     # Download media from telegram
     # ----------------------

@@ -1,7 +1,7 @@
-from db import conn
 import sys
 import os
 sys.path.insert(1, os.path.join(sys.path[0], '../'))
+from db import conn
 from config import app
 
 from pyrogram import Client

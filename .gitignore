@@ -5,3 +5,4 @@ app/.env
 .idea/
 app/userAgent/downloads/
 pg_db/
+app/instance/

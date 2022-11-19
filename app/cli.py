@@ -26,7 +26,7 @@ def create_db(name):
 
 @bp.cli.command("bot")
 @click.option('-bot', default="bot")
-def create_db(bot):
+def bot(bot):
     print("start %s " % bot)
     os.system("python userAgent/UserBot.py")
 
