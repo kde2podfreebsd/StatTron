@@ -1,1 +1,0 @@
-# Telegram User Agent Bot
