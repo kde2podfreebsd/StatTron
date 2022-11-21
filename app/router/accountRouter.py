@@ -28,7 +28,6 @@ def accounts():
         accounts = Account.query.filter(Account.username is not None).all()
         return list(map(lambda x: representation_account(x), accounts))
 
-
 @bp.route("/account/<username>", methods=['PATCH', 'GET', 'DELETE'])
 def account(username):
     if request.method == 'GET':
@@ -36,20 +35,18 @@ def account(username):
         output = representation_account(account) if account is not None else jsonify('Account does not exist')
         return output
 
-#TODO: пофиксить коммит в бд
     if request.method == 'PATCH':
         account = Account.query.filter_by(username=username).first()
         if account is not None:
             account.api_id = request.json['api_id'] if request.json.get('api_id') is not None else account.api_id  # int
-            # account.api_hash = request.json['api_hash'] if request.json.get('api_hash') is not None else account.api_hash,
-            # account.phone = request.json['phone'] if request.json.get('phone') is not None else account.phone,
-            # account.username = request.json['username'] if request.json.get('username') is not None else account.username,
-            # account.host = request.json['host'] if request.json.get('host') is not None else account.host,
-            # account.port = request.json['port'] if request.json.get('port') is not None else account.port,  # int
-            # account.public_key = request.json['public_key'] if request.json.get('public_key') is not None else account.public_key
+            account.api_hash = request.json['api_hash'] if request.json.get('api_hash') is not None else account.api_hash,
+            account.phone = request.json['phone'] if request.json.get('phone') is not None else account.phone,
+            account.username = request.json['username'] if request.json.get('username') is not None else account.username,
+            account.host = request.json['host'] if request.json.get('host') is not None else account.host,
+            account.port = request.json['port'] if request.json.get('port') is not None else account.port,  # int
+            account.public_key = request.json['public_key'] if request.json.get('public_key') is not None else account.public_key
             output = account.update(account = account)
-            # return output
-            return 'true'
+            return output
         else:
             return jsonify('Account does not exist')
 
