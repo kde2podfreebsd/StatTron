@@ -48,12 +48,20 @@ class Account(conn.Model):
 
                 return {"status": True, "msg": "Account created"}
 
-    def update(self):
+    def update(self, account):
         """
         update account
         """
         with app.app_context():
             if Account.query.filter_by(username=self.username).first():
+                acc = Account.query.filter_by(username=self.username).first()
+                acc.api_id = account.api_id
+                acc.api_hash = account.api_hash
+                acc.phone = account.phone
+                acc.username = account.username
+                acc.host = account.host
+                acc.port = account.port
+                acc.public_key = account.public_key
                 conn.session.commit()
                 return {"status": True, "msg": "Account updated"}
             else:

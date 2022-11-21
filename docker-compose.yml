@@ -2,6 +2,7 @@ version: '3'
 
 # docker-compose -f docker-compose.yml build
 # docker-compose -f docker-compose.yml up -d
+# sudo docker exec stattron1_test flask commands create_db
 
 services:
   app:

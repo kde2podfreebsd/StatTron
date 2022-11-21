@@ -1,4 +1,4 @@
-import routes
+from router import accountRouter, channelRouter
 from cli import bp
 from db import conn
 from config import app
@@ -11,7 +11,8 @@ app.config['JSON_AS_ASCII'] = False
 conn.init_app(app)
 
 app.register_blueprint(bp)
-app.register_blueprint(routes.bp)
+app.register_blueprint(accountRouter.bp)
+app.register_blueprint(channelRouter.bp)
 
 
 if __name__ == "__main__":
