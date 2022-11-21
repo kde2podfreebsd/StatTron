@@ -14,8 +14,11 @@ bot:
 server:
 	cd app/ && gunicorn --bind 0.0.0.0:5000 app:app
 
+db_dev:
+	cd app/ && flask commands create_db
+
 #---------------- Docker ----------------
-build:
+docker_build:
 	sudo docker-compose -f docker-compose.dev.yml build
 
 docker_up:
