@@ -91,6 +91,23 @@ class Channel(conn.Model):
 
                 return {"status": True, "msg": "Channel created", "channel": self}
 
+    def update(self, channel):
+        """
+        update account
+        """
+        with app.app_context():
+            if Channel.query.filter_by(channel_id=self.channel_id).first():
+                ch = Channel.query.filter_by(channel_id=self.channel_id).first()
+
+                ch.category = channel.category
+                ch.er_all = channel.er_all
+                ch.average_views = channel.average_views
+
+                conn.session.commit()
+                return {"status": True, "msg": "Account updated"}
+            else:
+                return {"status": False, "msg": "Account doesnt found"}
+
 
 if __name__ == "__main__":
     pass
