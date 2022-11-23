@@ -30,6 +30,9 @@ class Account(conn.Model):
                port: Optional[int],
                public_key: Optional[str]
                ):
+        """
+        create account
+        """
 
         with app.app_context():
             if Account.query.filter_by(username=username).first():

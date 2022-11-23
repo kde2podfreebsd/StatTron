@@ -9,7 +9,7 @@ from models.Accounts import Account
 bp = Blueprint('account_router', __name__)
 
 
-@bp.route("/accounts", methods=['POST', 'GET'])
+@bp.route("/account", methods=['POST', 'GET'])
 def accounts():
     if request.method == 'POST':
         new_account = Account()
@@ -22,18 +22,18 @@ def accounts():
             port=request.json['port'] if request.json['port'] is not None else None,  # int
             public_key=request.json['public_key'] if request.json['public_key'] is not None else None
         )
-        return output
+        return jsonify(output)
 
     if request.method == 'GET':
         accounts = Account.query.filter(Account.username is not None).all()
-        return list(map(lambda x: representation_account(x), accounts))
+        return jsonify(list(map(lambda x: representation_account(x), accounts)))
 
 @bp.route("/account/<username>", methods=['PATCH', 'GET', 'DELETE'])
 def account(username):
     if request.method == 'GET':
         account = Account.query.filter_by(username=username).first()
         output = representation_account(account) if account is not None else jsonify('Account does not exist')
-        return output
+        return jsonify(output)
 
     if request.method == 'PATCH':
         account = Account.query.filter_by(username=username).first()
@@ -46,13 +46,13 @@ def account(username):
             account.port = request.json['port'] if request.json.get('port') is not None else account.port,  # int
             account.public_key = request.json['public_key'] if request.json.get('public_key') is not None else account.public_key
             output = account.update(account = account)
-            return output
+            return jsonify(output)
         else:
-            return jsonify('Account does not exist')
+            return jsonify({"status": False, "msg": "Account doesnt found"})
 
     if request.method == 'DELETE':
         if Account.query.filter_by(username=username).first() is not None:
-            return Account.query.filter_by(username=username).first().delete()
+            return jsonify(Account.query.filter_by(username=username).first().delete())
         else:
-            return {"status": False, "msg": "Account doesnt found"}
+            return jsonify({"status": False, "msg": "Account doesnt found"})
 
