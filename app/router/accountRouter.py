@@ -18,9 +18,9 @@ def accounts():
             api_hash=request.json['api_hash'],
             phone=request.json['phone'],
             username=request.json['username'],
-            host=request.json['host'] if request.json['host'] is not None else None,
-            port=request.json['port'] if request.json['port'] is not None else None,  # int
-            public_key=request.json['public_key'] if request.json['public_key'] is not None else None
+            host=request.json['host'] if request.json.get('host') is not None else None,
+            port=request.json['port'] if request.json.get('port') is not None else None,  # int
+            public_key=request.json['public_key'] if request.json.get('public_key') is not None else None
         )
         return jsonify(output)
 

@@ -37,16 +37,16 @@ class Channel(conn.Model):
                        channel_id: int,
                        is_scam: bool,
                        is_private: bool,
-                       title: Optional[str],
-                       username: Optional[str],
                        members_count: int,
-                       description: Optional[str],
-                       category: Optional[str],
-                       photo_big_file_id: Optional[str],
-                       photo_small_file_id: Optional[str],
-                       small_photo_path: Optional[str],
-                       average_views: Optional[float],
-                       er_all: Optional[float]
+                       title: Optional[str] = None,
+                       username: Optional[str] = None,
+                       description: Optional[str] = None,
+                       category: Optional[str] = None,
+                       photo_big_file_id: Optional[str] = None,
+                       photo_small_file_id: Optional[str] = None,
+                       small_photo_path: Optional[str] = None,
+                       average_views: Optional[float] = None,
+                       er_all: Optional[float] = None
                        ):
         with app.app_context():
             if Channel.query.filter_by(channel_id=channel_id).first():

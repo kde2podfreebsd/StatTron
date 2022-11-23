@@ -26,9 +26,9 @@ class Account(conn.Model):
                api_hash: str,
                phone: str,
                username: str,
-               host: Optional[str],
-               port: Optional[int],
-               public_key: Optional[str]
+               host: Optional[str] = None,
+               port: Optional[int] = None,
+               public_key: Optional[str] = None
                ):
         """
         create account

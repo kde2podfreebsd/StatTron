@@ -55,6 +55,11 @@ class UserBot:
                         photo_path = ch.photo_small_file_id
                     else:
                         if hasattr(chat.photo, 'small_file_id'):
+                            try:
+                                if ch is not None and ch.small_photo_path is not None:
+                                    os.system(f'rm {ch.small_photo_path}')
+                            except Exception:
+                                pass
                             photo_path = await app.download_media(chat.photo.small_file_id)
                         else:
                             photo_path = None
@@ -132,11 +137,13 @@ if __name__ == "__main__":
 
         accounts = Account.query.filter(Account.username is not None).all()
 
-        # for account in accounts:
-        ubot = UserBot(username='donqhomo', debug=False)
-        output = run(ubot.get_channels())
-        print(output)
+        for account in accounts:
+            ubot = UserBot(username=account.username, debug=False)
+            try:
+                output = run(ubot.get_channels())
+            except AttributeError:
+                logging.warning(f'\n\n!!!session for account {account.username} doesnt inited!!!\n\n')
+                continue
 
-        if output.__class__ is AttributeError:
-            logging.warning('\n\n!!!session for account doesnt inited!!!\n\n')
+            print(account.channels)
 
