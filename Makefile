@@ -9,7 +9,7 @@ deps:
 
 #---------------- app ----------------
 bot:
-	python app/userAgent/UserBot.py
+	cd app/userBot/ && python UserAgent.py
 
 server:
 	cd app/ && gunicorn --bind 0.0.0.0:5000 app:app

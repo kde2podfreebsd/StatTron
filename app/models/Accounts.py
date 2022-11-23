@@ -26,10 +26,13 @@ class Account(conn.Model):
                api_hash: str,
                phone: str,
                username: str,
-               host: Optional[str],
-               port: Optional[int],
-               public_key: Optional[str]
+               host: Optional[str] = None,
+               port: Optional[int] = None,
+               public_key: Optional[str] = None
                ):
+        """
+        create account
+        """
 
         with app.app_context():
             if Account.query.filter_by(username=username).first():

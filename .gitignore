@@ -1,9 +1,9 @@
 venv/
-app/userAgent/sessions/
+app/userBot/sessions/
 app/database/userbot.sqlite
 app/.env
 .idea/
-app/userAgent/downloads/
+app/userBot/downloads/
 pg_db/
 app/instance/
 **/__pycache__

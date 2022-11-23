@@ -27,5 +27,5 @@ def create_db(name):
 @click.option('-bot', default="bot")
 def bot(bot):
     print("start %s " % bot)
-    os.system("python userAgent/UserBot.py")
+    os.system("python userBot/test.py")
 
