@@ -52,7 +52,7 @@ class UserBot:
                     ch = Channel.query.filter_by(channel_id=chat.id).first()
 
                     if ch is not None and hasattr(chat.photo, 'small_file_id') and ch.photo_small_file_id == chat.photo.small_file_id:
-                        photo_path = ch.photo_small_file_id
+                        photo_path = ch.small_photo_path
                     else:
                         if hasattr(chat.photo, 'small_file_id'):
                             try:
