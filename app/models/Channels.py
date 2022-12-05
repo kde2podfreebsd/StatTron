@@ -104,7 +104,19 @@ class Channel(conn.Model):
                 ch.average_views = channel.average_views
 
                 conn.session.commit()
-                return {"status": True, "msg": "Account updated"}
+                return {"status": True, "msg": "Channel updated"}
+            else:
+                return {"status": False, "msg": "Channel doesnt found"}
+
+    def delete(self):
+        """
+        delete account
+        """
+        with app.app_context():
+            if Channel.query.filter_by(channel_id=self.channel_id).first():
+                Channel.query.filter_by(channel_id=self.channel_id).delete()
+                conn.session.commit()
+                return {"status": True, "msg": "Account deleted"}
             else:
                 return {"status": False, "msg": "Account doesnt found"}
 

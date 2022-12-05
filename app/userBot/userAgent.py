@@ -168,8 +168,8 @@ class UserBot:
                     )
 
                     logging.info(res)
-                    # logging.info("sleep 0.2")
-                    # time.sleep(0.2)
+                    logging.info("sleep 0.2")
+                    time.sleep(0.2)
 
                 offset += 200
 
@@ -244,7 +244,8 @@ class UserBot:
         async with self.app as app:
             chat = await app.leave_chat(chat_id)
             print(chat)
-            # Channel.query.filter_by(channel_id=chat_id).first().delete()
+            ch = Channel.query.filter_by(channel_id=chat_id).first()
+            output = ch.delete()
             return True
 
     # except Exception as e:
@@ -257,34 +258,34 @@ class UserBot:
             return e
 
 
-# if __name__ == "__main__":
-with app.app_context():
-    app.config.from_pyfile("config.py")
-    conn.init_app(app)
+if __name__ == "__main__":
+    with app.app_context():
+        app.config.from_pyfile("config.py")
+        conn.init_app(app)
 
-    if len(sys.argv) < 2:
+        if len(sys.argv) < 2:
 
-        accounts = Account.query.filter(Account.username is not None).all()
+            accounts = Account.query.filter(Account.username is not None).all()
 
-        for account in accounts:
-            ubot = UserBot(username=account.username, debug=False)
-            try:
-                output = run(ubot.get_channels())
-            except AttributeError:
-                logging.warning(f'\n\n!!!session for account {account.username} doesnt inited!!!\n\n')
-                continue
+            for account in accounts:
+                ubot = UserBot(username=account.username, debug=False)
+                try:
+                    output = run(ubot.get_channels())
+                except AttributeError:
+                    logging.warning(f'\n\n!!!session for account {account.username} doesnt inited!!!\n\n')
+                    continue
 
-            print(account.channels)
+                print(account.channels)
 
-            for channel in account.channels:
-                run(ubot.get_chat_history(chat_id=channel.channel_id, acc=account, channel=channel))
-                logging.info("Sleep 5 sec")
-                time.sleep(5)
-    else:
-        print(sys.argv[1], sys.argv[2], sys.argv[3])
-        ubot = UserBot(username=sys.argv[2], debug=False)
-        match sys.argv[1]:
-            case 'join':
-                output = run(ubot.join_chat(chat_id=sys.argv[3]))
-            case 'left':
-                output = run(ubot.leave_chat(chat_id=sys.argv[3]))
+                for channel in account.channels:
+                    run(ubot.get_chat_history(chat_id=channel.channel_id, acc=account, channel=channel))
+                    logging.info("Sleep 5 sec")
+                    time.sleep(5)
+        else:
+            print(sys.argv[1], sys.argv[2], sys.argv[3])
+            ubot = UserBot(username=sys.argv[2], debug=False)
+            match sys.argv[1]:
+                case 'join':
+                    output = run(ubot.join_chat(chat_id=sys.argv[3]))
+                case 'left':
+                    output = run(ubot.leave_chat(chat_id=sys.argv[3]))

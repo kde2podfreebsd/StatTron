@@ -8,7 +8,6 @@ from models.Accounts import Account
 
 bp = Blueprint('account_router', __name__)
 
-
 @bp.route("/account", methods=['POST', 'GET'])
 def accounts():
     if request.method == 'POST':
