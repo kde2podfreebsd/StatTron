@@ -2,9 +2,9 @@ import os
 import click
 from flask import Blueprint
 
-from models.Messages import Message
-from models.Accounts import Account
-from models.Channels import Channel
+# from models.Messages import Message
+# from models.Accounts import Account
+# from models.Channels import Channel
 
 from db import conn
 
@@ -16,7 +16,7 @@ def say_my_name(name):
     print("test_exec %s " % name)
 
 @bp.cli.command("create_db")
-@click.option('-name', default="Noname")
+@click.option('-name', default="stattron_db")
 def create_db(name):
     print("creating db %s " % name)
     conn.drop_all()
@@ -24,7 +24,7 @@ def create_db(name):
     conn.session.commit()
 
 @bp.cli.command("bot")
-@click.option('-bot', default="bot")
+@click.option('-bot', default="tg_useragent_bot")
 def bot(bot):
     print("start %s " % bot)
     os.system("python userBot/userAgent.py")
