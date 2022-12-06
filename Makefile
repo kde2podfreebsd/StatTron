@@ -35,7 +35,7 @@ docker_rm:
 
 #---------------- Clean cache ----------------
 clean:
-	rm -rf app/__pycache__ && rm -rf client/__pycache__
+	cd app/ && find . -name __pycache__ -type d -print0|xargs -0 rm -r --
 
 #---------------- Git ----------------
 gadd:

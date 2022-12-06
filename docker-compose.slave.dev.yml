@@ -1,0 +1,48 @@
+version: '3'
+
+# docker-compose -f docker-compose.slave.dev.yml build
+# docker-compose -f docker-compose.slave.dev.yml up -d
+# sudo docker exec stattron_slave1 flask commands create_db
+# sudo docker exec stattron_slave1 python userBot/userAgent.py
+
+services:
+  app:
+    build: ./app
+    container_name: stattron_slave1
+    command: gunicorn --bind 0.0.0.0:5000 app:app --access-logfile logs/slave.log
+    environment:
+      - DATABASE_URL=postgresql://server_user:server_psw@db:5432/server_dbname
+    volumes:
+      - ./app:/app
+    expose:
+      - 5000
+    depends_on:
+      - db
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - ./pg_db:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=server_user
+      - POSTGRES_PASSWORD=server_psw
+      - POSTGRES_DB=server_dbname
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+      - PGADMIN_DEFAULT_PASSWORD=popipupy
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+      - PGADMIN_LISTEN_PORT=5555
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./static:/home/www/default/static
+      - ./nginx/www/:/home/web/www
+    depends_on:
+      - app
+      - pgadmin
