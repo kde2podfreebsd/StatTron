@@ -7,7 +7,7 @@ deps:
 	pip install -r app/requirements.txt
 	pip install -r client/requirements.txt
 
-#---------------- app ----------------
+#---------------- App [DEV] ----------------
 bot:
 	cd app/userBot/ && python UserAgent.py
 
@@ -17,15 +17,47 @@ server:
 db_dev:
 	cd app/ && flask commands create_db
 
-#---------------- Docker ----------------
-docker_build:
-	sudo docker-compose -f docker-compose.dev.yml build
+#---------------- App [PROD] ----------------
+master_db:
+	sudo docker exec stattron_master flask commands create_db
 
-docker_up:
-	sudo docker-compose -f docker-compose.dev.yml up
+slave_db:
+	sudo docker exec stattron_slave flask commands create_db
 
-docker_upd:
-	sudo docker-compose -f docker-compose.dev.yml up -d
+slave_userbot:
+	sudo docker exec stattron_slave python userBot/userAgent.py
+
+#---------------- Docker-Compose Slave --------------------------------
+docker_master_build:
+	sudo docker-compose -f docker-compose.slave.dev.yml build
+
+docker_master_up:
+	sudo docker-compose -f docker-compose.slave.dev.yml up
+
+docker_master_upd:
+	sudo docker-compose -f docker-compose.slave.dev.yml up -d
+
+#---------------- Docker-Compose Master -------------------------------
+docker_master_build:
+	sudo docker-compose -f docker-compose.master.dev.yml build
+
+docker_master_up:
+	sudo docker-compose -f docker-compose.master.dev.yml up
+
+docker_master_upd:
+	sudo docker-compose -f docker-compose.master.dev.yml up -d
+
+#---------------- Docker-Compose: PostgreSQL + PGAdmin4 ----------------
+docker_pgdb_build:
+	sudo docker-compose -f docker-compose.postgres.dev.yml build
+
+docker_pgdb_up:
+	sudo docker-compose -f docker-compose.postgres.dev.yml up
+
+docker_pgdb_upd:
+	sudo docker-compose -f docker-compose.postgres.dev.yml up -d
+
+#---------------- Docker---------------------------------------
 
 docker_stop:
 	sudo docker stop $(sudo docker ps -a -q)
