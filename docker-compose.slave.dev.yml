@@ -2,13 +2,13 @@ version: '3'
 
 # docker-compose -f docker-compose.slave.dev.yml build
 # docker-compose -f docker-compose.slave.dev.yml up -d
-# sudo docker exec stattron_slave1 flask commands create_db
-# sudo docker exec stattron_slave1 python userBot/userAgent.py
+# sudo docker exec stattron_slave flask commands create_db
+# sudo docker exec stattron_slave python userBot/userAgent.py
 
 services:
   app:
     build: ./app
-    container_name: stattron_slave1
+    container_name: stattron_slave
     command: gunicorn --bind 0.0.0.0:5000 app:app --access-logfile logs/slave.log
     environment:
       - DATABASE_URL=postgresql://server_user:server_psw@db:5432/server_dbname
