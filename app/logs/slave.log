@@ -1,3 +1,0 @@
-127.0.0.1 - - [06/Dec/2022:04:46:35 +0300] "GET / HTTP/1.1" 404 207 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0"
-127.0.0.1 - - [06/Dec/2022:04:46:36 +0300] "GET /favicon.ico HTTP/1.1" 404 207 "http://0.0.0.0:5000/" "Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0"
-127.0.0.1 - - [06/Dec/2022:04:46:46 +0300] "GET /account HTTP/1.1" 500 265 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0"
