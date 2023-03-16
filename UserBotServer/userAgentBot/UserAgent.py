@@ -2,10 +2,10 @@ import asyncio
 import uvloop
 from typing import Optional, List, Union
 from pyrogram import Client
-from app.logger import Logger
-from app.exceptions import UserAgentException
-from app.responseModels import GetMeUser, DownloadFilePWD, ChannelIds, \
-    ChatObject
+from UserBotServer.logger import Logger
+from UserBotServer.exceptions import UserAgentException
+from UserBotServer.responseModels import GetMeUser, DownloadFilePWD, ChannelIds, \
+    ChatObject, MessageChatObject, MessageEntity
 
 log = Logger()
 
@@ -171,19 +171,31 @@ class UserAgent(object):
             raise UserAgentException(err=e)
 
     @staticmethod
+    def reaction_count(reactions):
+        if reactions != None:
+            count = 0
+            reactions = list(reactions.reactions)
+            for reaction in reactions:
+                count += reaction.count
+            return count
+        else:
+            return 0
+
+    @staticmethod
     def find_mentions(message, mentions: Optional[List[str]] = list):
         result = []
-        text = message.text if message.text != None else message.caption
+        text = message.text if message.text is not None else message.caption
         for mention in mentions:
-            if f'@{mention}' in str(text) or f't.me/{mention}' in str(text):
+            if f'@{mention}' in str(text) or f't.me/{mention}' in str(text) or f'{mention}' in str(text):
                 result.append(mention)
-        if len(result) > 0:
-            return result
-        else:
-            return False
+        return len(result)
 
-    async def get_chat_history(self, chat_id: int | str, mentions: Optional[List[str]] = list):
+    async def get_chat_history(self, chat_id: int | str, mentions: Optional[List[str]] = list) -> List[MessageEntity]:
         app = Client("sessions/session")
+
+        messages_of_chat = []
+        message_entities = []
+
         async with app as app:
 
             iterate_status = True
@@ -194,21 +206,46 @@ class UserAgent(object):
 
             while iterate_status:
                 async for message in app.get_chat_history(chat_id=chat_id, offset=offset, limit=200):
-                    if message.id == 1:
+                    if message.id <= 1:
                         iterate_status = False
                         break
 
                     all_posts += 1
                     all_views += message.views if message.views is not None else 0
 
-                    mention_result = self.find_mentions(message = message, mentions=mentions)
-                    mention_count += 1 if mention_result is not False else mention_count
+                    mention_result = self.find_mentions(message=message, mentions=mentions)
+                    mention_count += mention_result
 
-                    print(message)
-                    print(all_posts)
-                    print(all_views)
-                    print(mention_result)
-                    print(mention_count)
+                    msg = MessageChatObject(
+                        chat_id=message.chat.id,
+                        username=message.chat.username,
+                        mention_result=mention_result,
+                        reactions_count=self.reaction_count(reactions=message.reactions),
+                        date_of_message=message.date,
+                        forwards_count=message.forwards,
+                        forward_from_chat=message.forward_from_chat,
+                        text_or_caption=message.text if message.text is not None else message.caption,
+                        sender_chat=message.sender_chat,
+                        message_id= message.id
+                    )
+
+                    messages_of_chat.append(msg)
+
+
+            for msg in messages_of_chat:
+                e = MessageEntity(date_of_message=msg.date_of_message, message=[msg])
+                message_entities.append(e)
+            i = 0
+            while i < len(message_entities):
+                if message_entities[i-1].date_of_message == message_entities[i].date_of_message:
+                    message_entities[i - 1].message.append(message_entities[i])
+                    message_entities.pop(i)
+                i += 1
+
+        return message_entities
+
+
+
 
 
 
@@ -219,13 +256,13 @@ uvloop.install()
 # asyncio.run(u.join_chat(chat_id=-1001733300868))
 # asyncio.run(u.leave_chat(chat_id=-1001733300868))
 # b = asyncio.run(u.get_me())
-# c = asyncio.run(u.download_media(file_id="AQADAgAD5b8xG36MOUoAEAIAA4oYzuUW____3KheB7rGuTsABB4E"))
-# c = asyncio.run(u.get_chat(chat_id=-1001622050265))
+# c = asyncio.run(u.download_media(file_id="AgACAgIAAx0EdAMSLAADC2QTd2SxArbeJFKbfD-Z3aEU1E9oAAKvxDEbFH-JSPFIPygmIIEHAAgBAAMCAAN5AAceBA"))
+# c = asyncio.run(u.get_chat(chat_id="testuseragentbotASASD"))
 # chat_ids = asyncio.run(u.get_channels_ids())
-chat_ids = asyncio.run(u.get_chat_history(chat_id=-1001733300868, mentions=['@CryptoRichWitch']))
+c = asyncio.run(u.get_chat_history(chat_id=-1001946358316, mentions=['@CryptoRichWitch']))
 # for id in chat_ids.chat_ids:
 #     print(asyncio.run(u.get_chat(chat_id=id)))
 
 # c = asyncio.run(u.get_channels_ids())
-# print(c)
+# print(len(c))
 # print(c.small_photo_unique_id)
