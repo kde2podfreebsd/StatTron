@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "stattron"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Bogomolov <qhomop@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+asyncpg = "^0.27.0"
+pre-commit = "^3.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

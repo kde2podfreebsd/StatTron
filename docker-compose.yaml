@@ -1,0 +1,30 @@
+version: "3.0"
+services:
+  db:
+    container_name: "db"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - custom
+
+  pgadmin:
+      container_name: pgadmin4_container
+      image: dpage/pgadmin4
+      restart: always
+      environment:
+        PGADMIN_DEFAULT_EMAIL: root@root.com
+        PGADMIN_DEFAULT_PASSWORD: root
+      ports:
+        - '5050:80'
+      networks:
+        - custom
+
+networks:
+  custom:
+    driver: bridge
