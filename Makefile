@@ -24,3 +24,4 @@ server_up:
 
 pre_commit:
 	pre-commit run flake8 --all-files
+
