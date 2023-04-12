@@ -50,7 +50,7 @@ class ChannelDAL:
     #     if user_row is not None:
     #         return user_row[0]
     #
-    # async def update_user(self, user_id: UUID, **kwargs) -> Union[UUID, None]:
+    # async def update_channel_simple(self, user_id: UUID, **kwargs) -> Union[UUID, None]:
     #     query = (
     #         update(User)
     #         .where(and_(User.user_id == user_id, User.is_active == True))

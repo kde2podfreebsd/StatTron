@@ -1,7 +1,7 @@
 # from sqlalchemy import and_
 # from sqlalchemy import select
 # from sqlalchemy import update
-from sqlalchemy import Date
+from sqlalchemy import DateTime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from Database.Models.PostModel import Post
@@ -15,7 +15,7 @@ class PostDAL:
             self,
             id_post: int,
             id_channel: int,
-            date: Date,
+            date: DateTime,
             views: int,
             id_channel_forward_from: int
     ) -> Post:
