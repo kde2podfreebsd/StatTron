@@ -11,6 +11,7 @@ asyncpg = "^0.27.0"
 pre-commit = "^3.2.2"
 envparse = "^0.2.0"
 sqlalchemy = "^2.0.9"
+coloredlogs = "^15.0.1"
 
 
 [build-system]
