@@ -1,6 +1,6 @@
 # StatTron
 
-## Инициализируем главную папку как корень приложения 
+## Инициализируем главную папку как корень приложения
 ```shell
 export PYTHONPATH=$PYTHONPATH:$(pwd)
 ```
@@ -31,9 +31,9 @@ rm -rf migrations/
 alembic init migrations
 ```
 
-#### Изменить sqlalchemy.url в alembic.ini 
+#### Изменить sqlalchemy.url в alembic.ini
 ```shell
-docker inspect db | grep IPAddress 
+docker inspect db | grep IPAddress
 ----------------------------------
 "SecondaryIPAddresses": null,
 "IPAddress": "",
@@ -64,5 +64,3 @@ alembic upgrade heads
 ```shell
 gunicorn main:app --reload --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:9876
 ```
-
-

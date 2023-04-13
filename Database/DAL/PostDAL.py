@@ -12,12 +12,12 @@ class PostDAL:
         self.db_session = db_session
 
     async def create_post(
-            self,
-            id_post: int,
-            id_channel: int,
-            date: DateTime,
-            views: int,
-            id_channel_forward_from: int
+        self,
+        id_post: int,
+        id_channel: int,
+        date: DateTime,
+        views: int,
+        id_channel_forward_from: int,
     ) -> Post:
 
         new_post = Post(
@@ -25,7 +25,7 @@ class PostDAL:
             id_channel=id_channel,
             date=date,
             views=views,
-            id_channel_forward_from=id_channel_forward_from
+            id_channel_forward_from=id_channel_forward_from,
         )
         self.db_session.add(new_post)
         await self.db_session.flush()
