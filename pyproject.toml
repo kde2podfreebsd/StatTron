@@ -12,6 +12,8 @@ pre-commit = "^3.2.2"
 envparse = "^0.2.0"
 sqlalchemy = "^2.0.9"
 coloredlogs = "^15.0.1"
+alembic = "^1.10.3"
+psycopg2 = "^2.9.6"
 
 
 [build-system]
