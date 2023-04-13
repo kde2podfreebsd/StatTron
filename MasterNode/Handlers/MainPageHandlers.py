@@ -114,11 +114,11 @@ async def _get_advertising_records_by_day_chart(
         advertising_records_by_day_chart=[
             AdvertisingRecordsByDay(
                 advertising_records_1month=10,
-                day_1month=datetime(2022, 21, 1),
+                day_1month=datetime(2022, 12, 1),
                 advertising_records_3month=30,
-                day_3month=datetime(2022, 21, 1),
+                day_3month=datetime(2022, 11, 1),
                 advertising_records_6month=60,
-                day_6month=datetime(2022, 21, 1),
+                day_6month=datetime(2022, 10, 1),
             )
         ]
     )

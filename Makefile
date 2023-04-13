@@ -26,4 +26,4 @@ pre_commit:
 	pre-commit run --all-files
 
 master_node:
-	python MasterNode
+	python MasterNode/main.py
