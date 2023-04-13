@@ -23,5 +23,7 @@ server_up:
 	uvicorn app.main:app
 
 pre_commit:
-	pre-commit run flake8 --all-files
+	pre-commit run --all-files
 
+master_node:
+	python MasterNode/main.py
