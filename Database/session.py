@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
 config.read(f"{basedir}/../config.ini")
