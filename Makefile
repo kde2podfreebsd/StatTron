@@ -19,11 +19,8 @@ alembic_rev:
 alembic_upgrade:
 	alembic upgrade heads
 
-server_up:
-	uvicorn app.main:app
+master_up:
+	uvicorn MasterNode.main:app --workers 4 --host 0.0.0.0 --port 9876
 
 pre_commit:
 	pre-commit run --all-files
-
-master_node:
-	python MasterNode/main.py
