@@ -62,9 +62,9 @@ alembic upgrade heads
 
 ## Запуск приложения
 ```shell
-gunicorn MasterNode.main:app --reload --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:9876
+uvicorn MasterNode.main:app --workers 4 --host 0.0.0.0 --port 9876
 
 #or
 
-make master_node
+make master_up
 ```
