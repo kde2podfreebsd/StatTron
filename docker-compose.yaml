@@ -13,6 +13,19 @@ services:
     networks:
       - custom
 
+  testdb:
+    container_name: "testdb"
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres_test
+      - POSTGRES_PASSWORD=postgres_test
+      - POSTGRES_DB=postgres_test
+    ports:
+      - "5432:5432"
+    networks:
+      - custom
+
   pgadmin:
       container_name: pgadmin4_container
       image: dpage/pgadmin4

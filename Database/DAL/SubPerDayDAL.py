@@ -12,17 +12,10 @@ class SubPerDayDAL:
         self.db_session = db_session
 
     async def create_sub_per_day(
-            self,
-            date: Date,
-            subs: int,
-            id_channel: int
+        self, date: Date, subs: int, id_channel: int
     ) -> SubPerDay:
 
-        new_sub_per_day = SubPerDay(
-            date=date,
-            subs=subs,
-            id_channel=id_channel
-        )
+        new_sub_per_day = SubPerDay(date=date, subs=subs, id_channel=id_channel)
         self.db_session.add(new_sub_per_day)
         await self.db_session.flush()
         return new_sub_per_day

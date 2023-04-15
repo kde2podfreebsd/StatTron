@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "d979d2f8-64f2-496f-907b-f268b698e747",
+		"name": "StatTron",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10258449"
+	},
+	"item": [
+		{
+			"name": "Channel Catalog",
+			"item": [
+				{
+					"name": "Seach by URL",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"URL\": \"url1\",\n    \"page\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:9876/channel_catalog/search_by_link",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"channel_catalog",
+								"search_by_link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Seach by Channel name",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"channel_name\": \"channel_name1\",\n    \"page\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:9876/channel_catalog/search_by_name",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"channel_catalog",
+								"search_by_name"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by Base filters",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\":2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:9876/channel_catalog/search_by_base_filters",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"channel_catalog",
+								"search_by_base_filters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Main Page",
+			"item": [
+				{
+					"name": "Top Active channels",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:9876/main_page/top_active_channels",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"main_page",
+								"top_active_channels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Top Channels by new subscribers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:9876/main_page/top_channels_by_new_subscribers",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"main_page",
+								"top_channels_by_new_subscribers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Top channels by 72 hours ER",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:9876/main_page/top_channels_by_72hours_er",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"main_page",
+								"top_channels_by_72hours_er"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Advertising records by day chart",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:9876/main_page/advertising_records_by_day_chart",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"main_page",
+								"advertising_records_by_day_chart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Advertising records by hour chart",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://0.0.0.0:9876/main_page/advertising_records_by_hours_chart",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"main_page",
+								"advertising_records_by_hours_chart"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Advertising Posts Catalog",
+			"item": [
+				{
+					"name": "Search advertising posts by filters",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://0.0.0.0:9876/advertising_posts_catalog_router/search_advertising_posts_by_filters",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "9876",
+							"path": [
+								"advertising_posts_catalog_router",
+								"search_advertising_posts_by_filters"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -1,4 +1,7 @@
-from sqlalchemy import Column, BigInteger, Date, ForeignKey
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import Date
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -12,5 +15,4 @@ class SubPerDay(Base):
     date = Column(Date, nullable=False)
     subs = Column(BigInteger, nullable=False)
     id_channel = Column(BigInteger, ForeignKey('channel.id_channel'), nullable=False)
-
-    channel = relationship('Channel', backref='SubsPerDay')
+    channel = relationship("Channel", backref="SubsPerDay")

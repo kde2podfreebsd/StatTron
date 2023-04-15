@@ -3,7 +3,6 @@ import os
 from typing import Generator
 import asyncio
 
-from envparse import Env
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,14 +10,13 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from Database.DAL.ChannelDAL import ChannelDAL
 env = Env()
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
 config.read(f"{basedir}/../config.ini")
 
-REAL_DATABASE_URL = env.str(
-    "REAL_DATABASE_URL",
-    default=f"postgresql+asyncpg://{config['POSTGRESQL']['user']}:{config['POSTGRESQL']['password']}@{config['POSTGRESQL']['host']}:{config['POSTGRESQL']['port']}/{config['POSTGRESQL']['database']}",
-)
+REAL_DATABASE_URL = f"postgresql+asyncpg://{config['POSTGRESQL']['user']}:{config['POSTGRESQL']['password']}@{config['POSTGRESQL']['host']}:{config['POSTGRESQL']['port']}/{config['POSTGRESQL']['database']}"
+TEST_DATABASE_URL = f"postgresql+asyncpg://{config['POSTGRESQL_TEST']['user']}:{config['POSTGRESQL_TEST']['password']}@{config['POSTGRESQL_TEST']['host']}:{config['POSTGRESQL_TEST']['port']}/{config['POSTGRESQL_TEST']['database']}"
 
 engine = create_async_engine(
     REAL_DATABASE_URL,

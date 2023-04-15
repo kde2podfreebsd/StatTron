@@ -1,4 +1,7 @@
-from sqlalchemy import Column, BigInteger, String
+from sqlalchemy import BigInteger
+from sqlalchemy import Column
+from sqlalchemy import String
+
 from Database.Models.MentionModel import Base
 
 

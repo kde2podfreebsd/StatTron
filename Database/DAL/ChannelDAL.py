@@ -11,13 +11,13 @@ class ChannelDAL:
         self.db_session = db_session
 
     async def create_channel(
-            self,
-            id_channel: int,
-            name: str,
-            link: str,
-            avatar_url: str,
-            description: str,
-            subs_total: int
+        self,
+        id_channel: int,
+        name: str,
+        link: str,
+        avatar_url: str,
+        description: str,
+        subs_total: int,
     ) -> Channel:
 
         new_channel = Channel(
@@ -26,7 +26,7 @@ class ChannelDAL:
             link=link,
             avatar_url=avatar_url,
             description=description,
-            subs_total=subs_total
+            subs_total=subs_total,
         )
         self.db_session.add(new_channel)
         await self.db_session.flush()
