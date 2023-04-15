@@ -15,7 +15,9 @@ from MasterNode.Models.MainPageModels import AdvertisingRecordsByHoursChart
 from MasterNode.Models.MainPageModels import TopActiveChannel
 from MasterNode.Models.MainPageModels import TopActiveChannels
 from MasterNode.Models.MainPageModels import TopChannelBy72hER
-from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers
+from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_today
+from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_week
+from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_yesterday
 from MasterNode.Models.MainPageModels import TopChannelsBy72hER
 from MasterNode.Models.MainPageModels import TopChannelsByNewSubscribers
 
@@ -50,7 +52,7 @@ async def _get_top_active_channels(db) -> Union[TopActiveChannels, None]:
     )
 
 
-async def _get_top_channels_by_new_subscribers(
+async def _get_top_channels_by_new_subscribers_today(
     db,
 ) -> Union[TopChannelsByNewSubscribers, None]:
     # async with db as session:
@@ -58,23 +60,71 @@ async def _get_top_channels_by_new_subscribers(
 
     return TopChannelsByNewSubscribers(
         top_channels_by_new_subscribers=[
-            TopChannelByNewSubscribers(
-                channel_name="abc",
+            TopChannelByNewSubscribers_today(
+                channel_name="TopChannelByNewSubscribers_today",
                 profile_img_url="123",
                 subscribers=123,
                 channel_id=-123,
                 new_subscribers_today=111,
-                new_subscribers_yesterday=222,
-                new_subscribers_week=777,
             ),
-            TopChannelByNewSubscribers(
-                channel_name="abc1",
+            TopChannelByNewSubscribers_today(
+                channel_name="TopChannelByNewSubscribers_today",
                 profile_img_url="1233",
                 subscribers=123,
                 channel_id=-1235,
                 new_subscribers_today=111,
-                new_subscribers_yesterday=222,
-                new_subscribers_week=777,
+            ),
+        ]
+    )
+
+
+async def _get_top_channels_by_new_subscribers_yesterday(
+    db,
+) -> Union[TopChannelsByNewSubscribers, None]:
+    # async with db as session:
+    #     async with session.begin():
+
+    return TopChannelsByNewSubscribers(
+        top_channels_by_new_subscribers=[
+            TopChannelByNewSubscribers_yesterday(
+                channel_name="TopChannelByNewSubscribers_yesterday",
+                profile_img_url="123",
+                subscribers=123,
+                channel_id=-123,
+                new_subscribers_yesterday=111,
+            ),
+            TopChannelByNewSubscribers_yesterday(
+                channel_name="TopChannelByNewSubscribers_yesterday",
+                profile_img_url="1233",
+                subscribers=123,
+                channel_id=-1235,
+                new_subscribers_yesterday=111,
+            ),
+        ]
+    )
+
+
+async def _get_top_channels_by_new_subscribers_week(
+    db,
+) -> Union[TopChannelsByNewSubscribers, None]:
+    # async with db as session:
+    #     async with session.begin():
+
+    return TopChannelsByNewSubscribers(
+        top_channels_by_new_subscribers=[
+            TopChannelByNewSubscribers_week(
+                channel_name="TopChannelByNewSubscribers_week",
+                profile_img_url="123",
+                subscribers=123,
+                channel_id=-123,
+                new_subscribers_week=111,
+            ),
+            TopChannelByNewSubscribers_week(
+                channel_name="TopChannelByNewSubscribers_week",
+                profile_img_url="1233",
+                subscribers=123,
+                channel_id=-1235,
+                new_subscribers_week=111,
             ),
         ]
     )
@@ -150,12 +200,43 @@ async def get_top_active_channels(
 
 
 @main_page_router.get(
-    "/top_channels_by_new_subscribers", response_model=TopChannelsByNewSubscribers
+    "/top_channels_by_new_subscribers_today", response_model=TopChannelsByNewSubscribers
 )
-async def get_top_channels_by_new_subscribers(
+async def get_top_channels_by_new_subscribers_today(
     db: AsyncSession = Depends(get_db),
 ) -> TopChannelsByNewSubscribers:
-    top_channels_by_new_subscribers = await _get_top_channels_by_new_subscribers(db)
+    top_channels_by_new_subscribers = await _get_top_channels_by_new_subscribers_today(
+        db
+    )
+    if top_channels_by_new_subscribers is None:
+        raise HTTPException(status_code=404, detail="Channels database is empty")
+    return top_channels_by_new_subscribers
+
+
+@main_page_router.get(
+    "/top_channels_by_new_subscribers_yesterday",
+    response_model=TopChannelsByNewSubscribers,
+)
+async def get_top_channels_by_new_subscribers_yesterday(
+    db: AsyncSession = Depends(get_db),
+) -> TopChannelsByNewSubscribers:
+    top_channels_by_new_subscribers = (
+        await _get_top_channels_by_new_subscribers_yesterday(db)
+    )
+    if top_channels_by_new_subscribers is None:
+        raise HTTPException(status_code=404, detail="Channels database is empty")
+    return top_channels_by_new_subscribers
+
+
+@main_page_router.get(
+    "/top_channels_by_new_subscribers_week", response_model=TopChannelsByNewSubscribers
+)
+async def get_top_channels_by_new_subscribers_week(
+    db: AsyncSession = Depends(get_db),
+) -> TopChannelsByNewSubscribers:
+    top_channels_by_new_subscribers = await _get_top_channels_by_new_subscribers_week(
+        db
+    )
     if top_channels_by_new_subscribers is None:
         raise HTTPException(status_code=404, detail="Channels database is empty")
     return top_channels_by_new_subscribers

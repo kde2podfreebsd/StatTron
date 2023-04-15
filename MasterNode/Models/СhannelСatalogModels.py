@@ -34,7 +34,6 @@ class ChannelsList(TunedModel):
 
 class ByLinkFilter(BaseModel):
     URL: str
-    page: int
 
 
 class ByNameFilter(BaseModel):

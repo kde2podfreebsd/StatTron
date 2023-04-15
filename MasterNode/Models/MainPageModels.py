@@ -31,18 +31,36 @@ class TopActiveChannels(TunedModel):
     top_active_channels: List[TopActiveChannel]
 
 
-class TopChannelByNewSubscribers(TunedModel):
+class TopChannelByNewSubscribers_today(TunedModel):
     channel_name: str
     profile_img_url: str
     subscribers: int
     channel_id: int
     new_subscribers_today: int
+
+
+class TopChannelByNewSubscribers_yesterday(TunedModel):
+    channel_name: str
+    profile_img_url: str
+    subscribers: int
+    channel_id: int
     new_subscribers_yesterday: int
+
+
+class TopChannelByNewSubscribers_week(TunedModel):
+    channel_name: str
+    profile_img_url: str
+    subscribers: int
+    channel_id: int
     new_subscribers_week: int
 
 
 class TopChannelsByNewSubscribers(TunedModel):
-    top_channels_by_new_subscribers: List[TopChannelByNewSubscribers]
+    top_channels_by_new_subscribers: List[
+        TopChannelByNewSubscribers_today
+        | TopChannelByNewSubscribers_yesterday
+        | TopChannelByNewSubscribers_week
+    ]
 
 
 class TopChannelBy72hER(TunedModel):
