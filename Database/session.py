@@ -1,10 +1,15 @@
 import configparser
 import os
 from typing import Generator
+import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from Database.DAL.ChannelDAL import ChannelDAL
+env = Env()
+
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,8 +26,8 @@ engine = create_async_engine(
     execution_options={"isolation_level": "AUTOCOMMIT"},
 )
 
-async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-
+# async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+async_session = async_sessionmaker(engine, expire_on_commit=True, class_=AsyncSession)
 
 async def get_db() -> Generator:
     try:
@@ -30,3 +35,28 @@ async def get_db() -> Generator:
         yield session
     finally:
         await session.close()
+async def get_db2() -> Generator:
+    try:
+        session: AsyncSession = async_session()
+        yield session
+    finally:
+        await session.close()
+
+async def test():
+
+    async with async_session() as session:
+        async with session.begin():
+
+            new_channel = ChannelDAL(session)
+
+            await new_channel.create_channel(
+                id_channel=1,
+                name="from_parse",
+                link="from_parse.link",
+                avatar_url="from_parse.avatar_url",
+                description="from_parse.description",
+                subs_total=4
+            )
+
+
+asyncio.run(test())
