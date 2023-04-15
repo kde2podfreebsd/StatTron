@@ -7,7 +7,7 @@ class Channel(Base):
 
     id_channel = Column(BigInteger, primary_key=True, nullable=False)
     name = Column(String, nullable=False)
-    link = Column(String, nullable=False)
+    link = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     description = Column(String, nullable=True)
     subs_total = Column(BigInteger, nullable=False)

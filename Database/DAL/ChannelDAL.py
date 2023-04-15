@@ -13,7 +13,8 @@ class ChannelDAL:
     async def create_channel(
             self,
             id_channel: int,
-            name: str, link: str,
+            name: str,
+            link: str,
             avatar_url: str,
             description: str,
             subs_total: int
