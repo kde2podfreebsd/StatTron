@@ -3,14 +3,14 @@ import os
 from typing import Generator
 import asyncio
 
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
+
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from Database.DAL.ChannelDAL import ChannelDAL
 env = Env()
-
-
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
@@ -27,7 +27,9 @@ engine = create_async_engine(
 )
 
 # async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
 async_session = async_sessionmaker(engine, expire_on_commit=True, class_=AsyncSession)
+
 
 async def get_db() -> Generator:
     try:

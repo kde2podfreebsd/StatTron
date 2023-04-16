@@ -24,7 +24,7 @@ channel_catalog_router = APIRouter()
 async def _search_by_link(body: ByLinkFilter, db) -> ChannelsList:
     # async with db as session:
     #     async with session.begin():
-    print(body.URL, body.page)
+    print(body)
     return ChannelsList(
         channels_list=[
             Channel(
