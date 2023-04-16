@@ -14,11 +14,9 @@ from MasterNode.Models.MainPageModels import AdvertisingRecordsByHours
 from MasterNode.Models.MainPageModels import AdvertisingRecordsByHoursChart
 from MasterNode.Models.MainPageModels import TopActiveChannel
 from MasterNode.Models.MainPageModels import TopActiveChannels
-from MasterNode.Models.MainPageModels import TopChannelBy72hER
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_today
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_week
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_yesterday
-from MasterNode.Models.MainPageModels import TopChannelsBy72hER
 from MasterNode.Models.MainPageModels import TopChannelsByNewSubscribers
 
 # from Database.DAL import UserDAL
@@ -130,30 +128,6 @@ async def _get_top_channels_by_new_subscribers_week(
     )
 
 
-async def _get_top_channels_by_72hours_er(db) -> Union[TopChannelsBy72hER, None]:
-    # async with db as session:
-    #     async with session.begin():
-
-    return TopChannelsBy72hER(
-        top_channels_by_72hours_er=[
-            TopChannelBy72hER(
-                channel_name="123",
-                profile_img_url="abc",
-                subscribers=123,
-                channel_id=-10001,
-                er_72hours=20.52,
-            ),
-            TopChannelBy72hER(
-                channel_name="1234",
-                profile_img_url="abc1",
-                subscribers=1243,
-                channel_id=-1000221,
-                er_72hours=24.00,
-            ),
-        ]
-    )
-
-
 async def _get_advertising_records_by_day_chart(
     db,
 ) -> Union[AdvertisingRecordsByDayChart, None]:
@@ -240,16 +214,6 @@ async def get_top_channels_by_new_subscribers_week(
     if top_channels_by_new_subscribers is None:
         raise HTTPException(status_code=404, detail="Channels database is empty")
     return top_channels_by_new_subscribers
-
-
-@main_page_router.get("/top_channels_by_72hours_er", response_model=TopChannelsBy72hER)
-async def get_top_channels_by_72hours_er(
-    db: AsyncSession = Depends(get_db),
-) -> TopChannelsBy72hER:
-    top_channels_by_72hours_er = await _get_top_channels_by_72hours_er(db)
-    if top_channels_by_72hours_er is None:
-        raise HTTPException(status_code=404, detail="Channels database is empty")
-    return top_channels_by_72hours_er
 
 
 @main_page_router.get(

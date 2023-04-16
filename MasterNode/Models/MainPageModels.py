@@ -63,18 +63,6 @@ class TopChannelsByNewSubscribers(TunedModel):
     ]
 
 
-class TopChannelBy72hER(TunedModel):
-    channel_name: str
-    profile_img_url: str
-    subscribers: int
-    channel_id: int
-    er_72hours: float
-
-
-class TopChannelsBy72hER(TunedModel):
-    top_channels_by_72hours_er: List[TopChannelBy72hER]
-
-
 class AdvertisingRecordsByDay(TunedModel):
     advertising_records_1month: int  # Y axis
     day_1month: datetime  # X axis
