@@ -7,9 +7,6 @@ down:
 clean:
 	find . -name __pycache__ -type d -print0|xargs -0 rm -r -- && rm -rf .idea/
 
-test:
-	pytest app/TaLib/Test/MomentumIndicatorsTest.py
-
 alembic_init:
 	alembic init migrations
 
