@@ -1,16 +1,15 @@
+# import asyncio
 import configparser
 import os
 from typing import Generator
-import asyncio
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import async_sessionmaker
 from Database.DAL.ChannelDAL import ChannelDAL
-env = Env()
+
+# from sqlalchemy.orm import sessionmaker
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
@@ -37,12 +36,15 @@ async def get_db() -> Generator:
         yield session
     finally:
         await session.close()
+
+
 async def get_db2() -> Generator:
     try:
         session: AsyncSession = async_session()
         yield session
     finally:
         await session.close()
+
 
 async def test():
 
@@ -57,8 +59,8 @@ async def test():
                 link="from_parse.link",
                 avatar_url="from_parse.avatar_url",
                 description="from_parse.description",
-                subs_total=4
+                subs_total=4,
             )
 
 
-asyncio.run(test())
+# asyncio.run(test())

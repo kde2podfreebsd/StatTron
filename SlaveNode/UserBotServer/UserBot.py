@@ -1,19 +1,32 @@
 import asyncio
-import uvloop
-from typing import Optional, List, Union, Dict
-from pyrogram import Client
-from Database.DAL.ChannelDAL import ChannelDAL
-from Database.DAL.PostDAL import PostDAL
-from Database.DAL.MentionDAL import MentionDAL
-# from Database.DAL.SubPerDayDAL import SubPerDay
-from responseModel import ChannelObject, ChannelIds, ChatObject, Mention, Post, UpdateChannel, UpdatePost
-from Database.session import get_db2
-from fastapi import Depends
 import datetime
+from typing import List
+from typing import Optional
+
+import uvloop
+from pyrogram import Client
+from responseModel import ChannelIds
+from responseModel import ChannelObject
+from responseModel import ChatObject
+from responseModel import Mention
+from responseModel import Post
+from responseModel import UpdateChannel
+from responseModel import UpdatePost
+
+from Database.DAL.ChannelDAL import ChannelDAL
+from Database.session import get_db2
+
+# from fastapi import Depends
+
+# from typing import Dict
+# from typing import Union
+# from Database.DAL.MentionDAL import MentionDAL
+# from Database.DAL.PostDAL import PostDAL
+
+# from Database.DAL.SubPerDayDAL import SubPerDay
 
 
 class UserAgent(object):
-
     @staticmethod
     async def join_chat(chat_id: int | str):
         try:
@@ -58,18 +71,23 @@ class UserAgent(object):
 
                 chat = await app.get_chat(chat_id)
 
-                pwd = await app.download_media(
-                    message=chat.photo.small_file_id,
-                    file_name=f"{chat.id}.jpg"
-                ) if chat.photo is not None else None
+                pwd = (
+                    await app.download_media(
+                        message=chat.photo.small_file_id, file_name=f"{chat.id}.jpg"
+                    )
+                    if chat.photo is not None
+                    else None
+                )
 
                 output = ChannelObject(
                     id_channel=chat.id,
                     name=chat.title,
-                    link=f"https://t.me/{chat.username}" if chat.username is not None else None,
+                    link=f"https://t.me/{chat.username}"
+                    if chat.username is not None
+                    else None,
                     avatar_url=pwd,
                     description=chat.description,
-                    subs_total=chat.members_count
+                    subs_total=chat.members_count,
                 )
                 print(output)
                 return output
@@ -78,7 +96,9 @@ class UserAgent(object):
             print(e)
 
     @staticmethod
-    async def parse_full_chat(chat_id: int, stored_channels: Optional[dict[str, int]] = None) -> ChatObject:
+    async def parse_full_chat(
+        chat_id: int, stored_channels: Optional[dict[str, int]] = None
+    ) -> ChatObject:
         try:
             app = Client("sessions/session")
 
@@ -87,10 +107,14 @@ class UserAgent(object):
                 mentions = []
                 iterate_status = True
                 offset_id = 0
-                date_183_day_later = datetime.datetime.now() - datetime.timedelta(days=183)
+                date_183_day_later = datetime.datetime.now() - datetime.timedelta(
+                    days=183
+                )
 
                 while iterate_status:
-                    async for message in app.get_chat_history(chat_id=chat_id, offset_id=offset_id, limit=100):
+                    async for message in app.get_chat_history(
+                        chat_id=chat_id, offset_id=offset_id, limit=100
+                    ):
 
                         if (message.date - date_183_day_later).days < 0:
                             iterate_status = False
@@ -99,14 +123,22 @@ class UserAgent(object):
                         if stored_channels is not None:
                             for name in stored_channels:
 
-                                text = message.text if message.text is not None else message.caption
+                                text = (
+                                    message.text
+                                    if message.text is not None
+                                    else message.caption
+                                )
 
-                                if f'@{name}' in str(text) or f't.me/{name}' in str(text) or f'{name}' in str(text):
+                                if (
+                                    f"@{name}" in str(text)
+                                    or f"t.me/{name}" in str(text)
+                                    or f"{name}" in str(text)
+                                ):
 
                                     mention = Mention(
                                         id_mentioned_channel=stored_channels[name],
                                         id_post=message.id,
-                                        id_channel=chat_id
+                                        id_channel=chat_id,
                                     )
                                     mentions.append(mention)
 
@@ -114,10 +146,13 @@ class UserAgent(object):
                             id_post=message.id,
                             id_channel=chat_id,
                             date=message.date,
-                            text=message.text if message.text is not None else message.caption,
+                            text=message.text
+                            if message.text is not None
+                            else message.caption,
                             views=message.views if message.views is not None else 0,
                             id_channel_forward_from=message.forward_from_chat.id
-                            if message.forward_from_chat is not None else None
+                            if message.forward_from_chat is not None
+                            else None,
                         )
 
                         posts.append(post)
@@ -127,7 +162,6 @@ class UserAgent(object):
                             break
 
                     offset_id = posts[len(posts) - 1].id_post
-
 
                 i = 1
                 while i < len(posts) - 1:
@@ -150,10 +184,14 @@ class UserAgent(object):
                 posts = []
                 iterate_status = True
                 offset_id = 0
-                date_30_day_later = datetime.datetime.now() - datetime.timedelta(days=30)
+                date_30_day_later = datetime.datetime.now() - datetime.timedelta(
+                    days=30
+                )
 
                 while iterate_status:
-                    async for message in app.get_chat_history(chat_id=chat_id, offset_id=offset_id, limit=100):
+                    async for message in app.get_chat_history(
+                        chat_id=chat_id, offset_id=offset_id, limit=100
+                    ):
 
                         if (message.date - date_30_day_later).days < 0:
                             iterate_status = False
@@ -194,8 +232,7 @@ class UserAgent(object):
                 chat = await app.get_chat(chat_id)
 
                 output = UpdateChannel(
-                    id_channel=chat.id,
-                    subs_total=chat.members_count
+                    id_channel=chat.id, subs_total=chat.members_count
                 )
 
                 return output
@@ -241,8 +278,9 @@ async def add_all_channel(channel_ids, session: AsyncSession = Depends(get_db2))
                     link=from_parse.link,
                     avatar_url=from_parse.avatar_url,
                     description=from_parse.description,
-                    subs_total=from_parse.subs_total
+                    subs_total=from_parse.subs_total,
                 )
+
 
 m = asyncio.run(add_all_channel(c.channel_ids[:1]))
 
@@ -267,115 +305,114 @@ m = asyncio.run(add_all_channel(c.channel_ids[:1]))
 #             id_channel_forward_from=post.id_channel_forward_from)
 # print(c.posts[0].date)
 
-    # @staticmethod
-    # def find_mentions(message, mentions: Optional[List[str]] = list):
-    #     result = []
-    #     text = message.text if message.text is not None else message.caption
-    #     for mention in mentions:
-    #         if f'@{mention}' in str(text) or f't.me/{mention}' in str(text) or f'{mention}' in str(text):
-    #             result.append(mention)
-    #     return len(result)
-    # @staticmethod
-    # async def parse_full_chat(chat_id: int | str) -> ChatObject:
-    # @staticmethod
-    # async def get_me() -> GetMeUser:
-    #     try:
-    #         app = Client("sessions/session")
-    #         async with app:
-    #             response = await app.get_me()
-    #             print(response)
-    #             output = GetMeUser(
-    #                 id=response.id,
-    #                 is_self=response.is_self,
-    #                 is_contact=response.is_contact,
-    #                 is_mutual_contact=response.is_mutual_contact,
-    #                 is_deleted=response.is_deleted,
-    #                 is_bot=response.is_bot,
-    #                 is_verified=response.is_verified,
-    #                 is_restricted=response.is_restricted,
-    #                 is_scam=response.is_scam,
-    #                 is_fake=response.is_fake,
-    #                 is_support=response.is_support,
-    #                 is_premium=response.is_premium,
-    #                 first_name=response.first_name,
-    #                 last_name=response.last_name,
-    #                 status=response.status,
-    #                 last_online_date=response.last_online_date,
-    #                 username=response.username,
-    #                 dc_id=response.dc_id,
-    #                 phone_number=response.phone_number,
-    #                 photo=response.photo
-    #             )
-    #
-    #             log.logger.info(output)
-    #             return output
-    #
-    #     except Exception as e:
-    #         log.logger.error(e)
-    #         raise UserAgentException(err=e)
+# @staticmethod
+# def find_mentions(message, mentions: Optional[List[str]] = list):
+#     result = []
+#     text = message.text if message.text is not None else message.caption
+#     for mention in mentions:
+#         if f'@{mention}' in str(text) or f't.me/{mention}' in str(text) or f'{mention}' in str(text):
+#             result.append(mention)
+#     return len(result)
+# @staticmethod
+# async def parse_full_chat(chat_id: int | str) -> ChatObject:
+# @staticmethod
+# async def get_me() -> GetMeUser:
+#     try:
+#         app = Client("sessions/session")
+#         async with app:
+#             response = await app.get_me()
+#             print(response)
+#             output = GetMeUser(
+#                 id=response.id,
+#                 is_self=response.is_self,
+#                 is_contact=response.is_contact,
+#                 is_mutual_contact=response.is_mutual_contact,
+#                 is_deleted=response.is_deleted,
+#                 is_bot=response.is_bot,
+#                 is_verified=response.is_verified,
+#                 is_restricted=response.is_restricted,
+#                 is_scam=response.is_scam,
+#                 is_fake=response.is_fake,
+#                 is_support=response.is_support,
+#                 is_premium=response.is_premium,
+#                 first_name=response.first_name,
+#                 last_name=response.last_name,
+#                 status=response.status,
+#                 last_online_date=response.last_online_date,
+#                 username=response.username,
+#                 dc_id=response.dc_id,
+#                 phone_number=response.phone_number,
+#                 photo=response.photo
+#             )
+#
+#             log.logger.info(output)
+#             return output
+#
+#     except Exception as e:
+#         log.logger.error(e)
+#         raise UserAgentException(err=e)
 
-    # @staticmethod
-    # async def _download_media(file_id: str) -> str:
-    #     try:
-    #         app = Client("sessions/session")
-    #         async with app as app:
-    #             pwd = await app.download_media(file_id)
-    #             return pwd
-    #
-    #     except ValueError or Exception as e:
-    #         print(e)
-
-
-    # @staticmethod
-    # async def main_parse_chat(chat_id: int | str) -> ChatObject:
-    #     try:
-    #         app = Client("sessions/session")
-    #         async with app as app:
-    #
-    #             chat = await app.get_chat(chat_id)
-    #
-    #             pwd = await app.download_media(
-    #                 message=chat.photo.small_file_id,
-    #                 file_name=f"{chat.id}.jpg"
-    #             ) if chat.photo is not None else None
-    #
-    #             output = ChatObject(
-    #                 id_channel=chat.id,
-    #                 name=chat.title,
-    #                 link=f"https://t.me/{chat.username}",
-    #                 avatar_url=pwd,
-    #                 description=chat.description,
-    #                 subs_total=chat.members_count
-    #             )
-    #
-    #             return output
-    #
-    #     except ValueError or Exception as e:
-    #         print(e)
+# @staticmethod
+# async def _download_media(file_id: str) -> str:
+#     try:
+#         app = Client("sessions/session")
+#         async with app as app:
+#             pwd = await app.download_media(file_id)
+#             return pwd
+#
+#     except ValueError or Exception as e:
+#         print(e)
 
 
-    #
+# @staticmethod
+# async def main_parse_chat(chat_id: int | str) -> ChatObject:
+#     try:
+#         app = Client("sessions/session")
+#         async with app as app:
+#
+#             chat = await app.get_chat(chat_id)
+#
+#             pwd = await app.download_media(
+#                 message=chat.photo.small_file_id,
+#                 file_name=f"{chat.id}.jpg"
+#             ) if chat.photo is not None else None
+#
+#             output = ChatObject(
+#                 id_channel=chat.id,
+#                 name=chat.title,
+#                 link=f"https://t.me/{chat.username}",
+#                 avatar_url=pwd,
+#                 description=chat.description,
+#                 subs_total=chat.members_count
+#             )
+#
+#             return output
+#
+#     except ValueError or Exception as e:
+#         print(e)
 
-    #
-    # @staticmethod
-    # def reaction_count(reactions):
-    #     if reactions != None:
-    #         count = 0
-    #         reactions = list(reactions.reactions)
-    #         for reaction in reactions:
-    #             count += reaction.count
-    #         return count
-    #     else:
-    #         return 0
-    #
+
+#
+
+#
+# @staticmethod
+# def reaction_count(reactions):
+#     if reactions != None:
+#         count = 0
+#         reactions = list(reactions.reactions)
+#         for reaction in reactions:
+#             count += reaction.count
+#         return count
+#     else:
+#         return 0
+#
 
 
-    # @staticmethod
-    # async def get_message():
-    #     app = Client("sessions/session")
-    #     async with app as app:
-    #         c = await app.get_messages("etp_invest", 2724)
-
+# @staticmethod
+# async def get_message():
+#     app = Client("sessions/session")
+#     async with app as app:
+#         c = await app.get_messages("etp_invest", 2724)
 
 
 # print(UserAgent.)

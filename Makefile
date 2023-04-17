@@ -21,3 +21,6 @@ master_up:
 
 pre_commit:
 	pre-commit run --all-files
+
+git_clean_cache:
+	git rm -rf --cached .

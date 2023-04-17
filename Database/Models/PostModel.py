@@ -14,8 +14,9 @@ class Post(Base):
     id_channel = Column(BigInteger, ForeignKey("channel.id_channel"), primary_key=True)
     date = Column(DateTime, nullable=False)
     views = Column(BigInteger, nullable=False)
-    id_channel_forward_from = Column(BigInteger, ForeignKey('channel.id_channel'), nullable=True)
+    id_channel_forward_from = Column(
+        BigInteger, ForeignKey("channel.id_channel"), nullable=True
+    )
 
-    channel = relationship('Channel', backref='posts', foreign_keys="")
-    channelForwardFrom = relationship('Channel', backref='forwardedFrom')
-
+    channel = relationship("Channel", backref="posts", foreign_keys="")
+    channelForwardFrom = relationship("Channel", backref="forwardedFrom")
