@@ -8,6 +8,7 @@ __pycache__/
 
 pyproject.toml
 SlaveNode/UserBotServer/sessions/
+config.ini
 
 # C extensions
 *.so
