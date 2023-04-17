@@ -33,5 +33,18 @@ def get_text_messages(message):
         pass
 
 
+@bot.callback_query_handler(func=lambda call: True)
+def language(call):
+    print(call.data)
+    try:
+
+        if call.data == "check_password":
+            print("введите пароль")
+            print(call.data.message.text)
+
+    except Exception:
+        pass
+
+
 if __name__ == "__main__":
     bot.infinity_polling()
