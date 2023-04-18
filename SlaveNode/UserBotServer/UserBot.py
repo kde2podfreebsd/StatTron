@@ -1,9 +1,8 @@
-import asyncio
+# import asyncio
 import datetime
 from typing import List
 from typing import Optional
 
-import uvloop
 from pyrogram import Client
 from responseModel import ChannelIds
 from responseModel import ChannelObject
@@ -13,20 +12,20 @@ from responseModel import Post
 from responseModel import UpdateChannel
 from responseModel import UpdatePost
 
-from Database.DAL.ChannelDAL import ChannelDAL
-from Database.session import get_db2
-
-# from fastapi import Depends
+# import uvloop
 
 # from typing import Dict
 # from typing import Union
-# from Database.DAL.MentionDAL import MentionDAL
-# from Database.DAL.PostDAL import PostDAL
-
-# from Database.DAL.SubPerDayDAL import SubPerDay
 
 
 class UserAgent(object):
+    @staticmethod
+    async def main():
+        async with Client(
+            "sessions/session", 23677472, "6945657dfb3f7d10558065c24bd8d904"
+        ) as app:
+            await app.send_message("me", "Greetings from **Pyrogram**!")
+
     @staticmethod
     async def join_chat(chat_id: int | str):
         try:
@@ -211,13 +210,6 @@ class UserAgent(object):
 
                     offset_id = posts[len(posts) - 1].id_post
 
-                # i = 1
-                # while i < len(posts) - 1:
-                #     if posts[i - 1].date == posts[i].date:
-                #         del posts[i - 1]
-                #         print(i)
-                #     i += 1
-
             return posts
 
         except ValueError or Exception as e:
@@ -241,9 +233,9 @@ class UserAgent(object):
             print(e)
 
 
-uvloop.install()
+# uvloop.install()
 #
-c = asyncio.run(UserAgent.get_channels_ids())
+# c = asyncio.run(UserAgent.main())
 # for j in c.channel_ids:
 #     print(asyncio.run(UserAgent.check_subs_per_day(j)))
 
@@ -256,33 +248,30 @@ c = asyncio.run(UserAgent.get_channels_ids())
 #     if i.id_channel_forward_from is not None:
 #         print(i)
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from fastapi import Depends
 
 
-async def add_all_channel(channel_ids, session: AsyncSession = Depends(get_db2)):
-
-    for i in channel_ids:
-
-        async with session:
-
-            async with session.begin():
-
-                from_parse = asyncio.run(UserAgent.main_parse_chat(i))
-
-                new_channel = ChannelDAL(session)
-
-                await new_channel.create_channel(
-                    id_channel=from_parse.id_channel,
-                    name=from_parse.name,
-                    link=from_parse.link,
-                    avatar_url=from_parse.avatar_url,
-                    description=from_parse.description,
-                    subs_total=from_parse.subs_total,
-                )
-
-
-m = asyncio.run(add_all_channel(c.channel_ids[:1]))
+# async def add_all_channel(channel_ids, session: AsyncSession = Depends(get_db2)):
+#
+#     for i in channel_ids:
+#
+#         async with session:
+#
+#             async with session.begin():
+#
+#                 from_parse = asyncio.run(UserAgent.main_parse_chat(i))
+#
+#                 new_channel = ChannelDAL(session)
+#
+#                 await new_channel.create_channel(
+#                     id_channel=from_parse.id_channel,
+#                     name=from_parse.name,
+#                     link=from_parse.link,
+#                     avatar_url=from_parse.avatar_url,
+#                     description=from_parse.description,
+#                     subs_total=from_parse.subs_total,
+#                 )
 
 
 # print("------")
