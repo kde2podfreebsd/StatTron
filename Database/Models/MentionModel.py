@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 
-from Database.Models.PostModel import Base
+from Database.Models import Base
 
 
 class Mention(Base):
@@ -23,5 +23,10 @@ class Mention(Base):
         {},
     )
 
-    mentionedChannel = relationship("Channel", backref="mentions")
-    post = relationship("Post", backref="mentions")
+    mentionedChannel = relationship(
+        "Channel", back_populates="mentions", viewonly=True, lazy="selectin"
+    )
+
+    post = relationship(
+        "Post", back_populates="mentions", viewonly=True, lazy="selectin"
+    )
