@@ -1,6 +1,5 @@
 # import asyncio
 import datetime
-from typing import List
 from typing import Optional
 
 from pyrogram import Client
@@ -10,12 +9,15 @@ from responseModel import ChatObject
 from responseModel import Mention
 from responseModel import Post
 from responseModel import UpdateChannel
-from responseModel import UpdatePost
 
-# import uvloop
+# from typing import List
 
-# from typing import Dict
-# from typing import Union
+# from responseModel import UpdatePost
+
+# # import uvloop
+
+# # from typing import Dict
+# # from typing import Union
 
 
 class UserAgent(object):
@@ -95,8 +97,10 @@ class UserAgent(object):
             print(e)
 
     @staticmethod
-    async def parse_full_chat(
-        chat_id: int, stored_channels: Optional[dict[str, int]] = None
+    async def parse_chat(
+        chat_id: int,
+        stored_channels: Optional[dict[str, int]] = None,
+        days_for_date_offset: int = 183,
     ) -> ChatObject:
         try:
             app = Client("sessions/session")
@@ -106,8 +110,8 @@ class UserAgent(object):
                 mentions = []
                 iterate_status = True
                 offset_id = 0
-                date_183_day_later = datetime.datetime.now() - datetime.timedelta(
-                    days=183
+                date_offset = datetime.datetime.now() - datetime.timedelta(
+                    days=days_for_date_offset
                 )
 
                 while iterate_status:
@@ -115,7 +119,7 @@ class UserAgent(object):
                         chat_id=chat_id, offset_id=offset_id, limit=100
                     ):
 
-                        if (message.date - date_183_day_later).days < 0:
+                        if (message.date - date_offset).days < 0:
                             iterate_status = False
                             break
 
@@ -129,10 +133,12 @@ class UserAgent(object):
                                 )
 
                                 if (
-                                    f"@{name}" in str(text)
-                                    or f"t.me/{name}" in str(text)
-                                    or f"{name}" in str(text)
+                                    (f"@{name}" in str(text))
+                                    or (f"t.me/{name}" in str(text))
+                                    or (f"{name}" in str(text))
+                                    and (name is not None)
                                 ):
+                                    print(f"{name}")
 
                                     mention = Mention(
                                         id_mentioned_channel=stored_channels[name],
@@ -155,62 +161,21 @@ class UserAgent(object):
                         )
 
                         posts.append(post)
-
+                        offset_id = posts[len(posts) - 1].id_post
                         if message.id <= 1:
                             iterate_status = False
                             break
 
-                    offset_id = posts[len(posts) - 1].id_post
+                    # offset_id = posts[len(posts) - 1].id_post
 
                 i = 1
                 while i < len(posts) - 1:
                     if posts[i - 1].date == posts[i].date:
                         del posts[i - 1]
+                        continue
                     i += 1
 
             return ChatObject(posts=posts, mentions=mentions)
-
-        except ValueError or Exception as e:
-            print(e)
-
-    @staticmethod
-    async def update_views_for_last_30_days(chat_id: int) -> List[UpdatePost]:
-        try:
-            app = Client("sessions/session")
-
-            async with app as app:
-
-                posts = []
-                iterate_status = True
-                offset_id = 0
-                date_30_day_later = datetime.datetime.now() - datetime.timedelta(
-                    days=30
-                )
-
-                while iterate_status:
-                    async for message in app.get_chat_history(
-                        chat_id=chat_id, offset_id=offset_id, limit=100
-                    ):
-
-                        if (message.date - date_30_day_later).days < 0:
-                            iterate_status = False
-                            break
-
-                        post = UpdatePost(
-                            id_post=message.id,
-                            id_channel=chat_id,
-                            views=message.views if message.views is not None else 0,
-                        )
-
-                        posts.append(post)
-
-                        if message.id <= 1:
-                            iterate_status = False
-                            break
-
-                    offset_id = posts[len(posts) - 1].id_post
-
-            return posts
 
         except ValueError or Exception as e:
             print(e)

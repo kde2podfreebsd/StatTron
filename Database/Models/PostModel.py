@@ -15,26 +15,26 @@ class Post(Base):
     id_channel = Column(BigInteger, ForeignKey("channel.id_channel"), primary_key=True)
     date = Column(DateTime, nullable=False)
     views = Column(BigInteger, nullable=False)
-
     text = Column(String, nullable=True)
+
     id_channel_forward_from = Column(
         BigInteger, ForeignKey("channel.id_channel"), nullable=True
     )
 
-    channel = relationship(
-        "Channel",
-        foreign_keys="[id_channel]",
-        back_populates="posts",
-        viewonly=True,
-        lazy="selectin",
-    )
+    # channelForwardFrom = relationship(
+    #     "Channel",
+    #     foreign_keys="Post.id_channel_forward_from",
+    #     backref="forwardedFrom",
+    #     viewonly=True,
+    #     lazy="selectin",
+    # )
 
-    channelForwardFrom = relationship(
-        "Channel",
-        foreign_keys="[id_channel_forward_from]",
-        back_populates="forwardedFrom",
-        viewonly=True,
-        lazy="selectin",
-    )
+    # channel = relationship(
+    #     "Channel",
+    #     foreign_keys="Post.id_channel",
+    #     backref="posts",
+    #     viewonly=True,
+    #     lazy="selectin",
+    # )
 
     mentions = relationship("Mention", back_populates="post", lazy="selectin")

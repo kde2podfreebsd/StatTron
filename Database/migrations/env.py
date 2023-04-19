@@ -15,9 +15,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-
-# from myapp import mymodel
-from Database.Models.ChannelModel import Base
+from Database.Models import Base
 
 target_metadata = Base.metadata
 # target_metadata = None
