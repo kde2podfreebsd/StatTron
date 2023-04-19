@@ -1,0 +1,12 @@
+asyncpg==0.27.0
+pre-commit==3.2.2
+envparse ==0.2.0
+sqlalchemy ==2.0.9
+coloredlogs ==15.0.1
+uvloop ==0.17.0
+pyrogram ==2.0.103
+tgcrypto ==1.2.5
+fastapi ==0.95.1
+pytelegrambotapi ==4.11.0
+redis ==4.5.4
+telethon ==1.28.5
