@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship
 
 from Database.Models import Base
 
+# from Database.Models.PostModel import Post
+
 
 class Channel(Base):
     __tablename__ = "channel"
@@ -23,8 +25,13 @@ class Channel(Base):
         "Mention", back_populates="mentionedChannel", lazy="selectin"
     )
 
-    posts = relationship("Post", back_populates="channel", lazy="selectin")
+    posts = relationship(
+        "Post", backref="channel", foreign_keys="Post.id_channel", lazy="selectin"
+    )
 
     forwardedFrom = relationship(
-        "Post", back_populates="channelForwardFrom", lazy="selectin"
+        "Post",
+        backref="channelForwardFrom",
+        foreign_keys="Post.id_channel_forward_from",
+        lazy="selectin",
     )

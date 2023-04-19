@@ -1,9 +1,13 @@
-# from sqlalchemy import and_
-# from sqlalchemy import select
-# from sqlalchemy import update
+from typing import List
+from typing import Union
+
+from sqlalchemy import select
+from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from Database.Models.ChannelModel import Channel
+
+# from sqlalchemy import and_
 
 
 class ChannelDAL:
@@ -18,19 +22,61 @@ class ChannelDAL:
         avatar_url: str,
         description: str,
         subs_total: int,
-    ) -> Channel:
+    ) -> Union[Channel, List[Channel]]:
 
-        new_channel = Channel(
-            id_channel=id_channel,
-            name=name,
-            link=link,
-            avatar_url=avatar_url,
-            description=description,
-            subs_total=subs_total,
-        )
-        self.db_session.add(new_channel)
-        await self.db_session.flush()
-        return new_channel
+        if (
+            await self.db_session.execute(
+                select(Channel).where(Channel.id_channel == id_channel)
+            )
+            is None
+        ):
+            new_channel = Channel(
+                id_channel=id_channel,
+                name=name,
+                link=link,
+                avatar_url=avatar_url,
+                description=description,
+                subs_total=subs_total,
+            )
+            self.db_session.add(new_channel)
+            await self.db_session.flush()
+            return new_channel
+
+        else:
+
+            query = (
+                update(Channel)
+                .where(Channel.id_channel == id_channel)
+                .values(
+                    name=name,
+                    link=link,
+                    avatar_url=avatar_url,
+                    description=description,
+                    subs_total=subs_total,
+                )
+                .returning(Channel)
+            )
+
+            res = await self.db_session.execute(query)
+            channel_row = res.fetchone()
+            channels = channel_row[0]
+            if channels is not None:
+                return channels
+
+    async def select_all_channels(self):
+        query = select(Channel)
+        res = await self.db_session.execute(query)
+        channel_row = res.fetchmany()
+        channels = list(x[0] for x in channel_row)
+        if channels is not None:
+            return channels
+
+    async def select_by_id(self, id_channel: int):
+        query = select(Channel).where(Channel.id_channel == id_channel)
+        res = await self.db_session.execute(query)
+        channel_row = res.fetchone()
+        if channel_row is not None:
+            return channel_row[0]
 
     # async def delete_user(self, user_id: UUID) -> Union[UUID, None]:
     #     query = (
