@@ -21,7 +21,7 @@ TEST_DATABASE_URL = f"postgresql+asyncpg://{config['POSTGRESQL_TEST']['user']}:{
 engine = create_async_engine(
     REAL_DATABASE_URL,
     future=True,
-    echo=True,
+    echo=False,
     execution_options={"isolation_level": "AUTOCOMMIT"},
 )
 
@@ -53,7 +53,7 @@ async def test():
 
             new_channel = ChannelDAL(session)
 
-            await new_channel.create_channel(
+            await new_channel._create_channel(
                 id_channel=1,
                 name="from_parse",
                 link="from_parse.link",
