@@ -4,9 +4,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
 from Database.Models import Base
-
-# from Database.Models.PostModel import Post
-
+from Database.Models.PostModel import Post
 
 class Channel(Base):
     __tablename__ = "channel"
@@ -26,12 +24,12 @@ class Channel(Base):
     )
 
     posts = relationship(
-        "Post", backref="channel", foreign_keys="Post.id_channel", lazy="selectin"
+        "Post",
+        backref="channel",
+        foreign_keys='Post.id_channel',
+        lazy="selectin"
     )
 
     forwardedFrom = relationship(
-        "Post",
-        backref="channelForwardFrom",
-        foreign_keys="Post.id_channel_forward_from",
-        lazy="selectin",
+        "Post", backref="channelForwardFrom", foreign_keys='Post.id_channel_forward_from', lazy="selectin"
     )
