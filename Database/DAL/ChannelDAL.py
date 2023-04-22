@@ -12,6 +12,7 @@ from SlaveNode.UserBotServer.responseRoute import MainPageTopChannelsUpSubsWeek
 from SlaveNode.UserBotServer.responseRoute import MainPageGraphicMentionPerHour
 from typing import Union, List
 
+
 class ChannelDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session

@@ -1,70 +1,14 @@
 # StatTron
 
-## Инициализируем главную папку как корень приложения
-```shell
-export PYTHONPATH=$PYTHONPATH:$(pwd)
-```
+## Docs
+-------
+### [Database docs](https://github.com/kde2podfreebsd/StatTron/blob/dev/docs/DATABASE.md)
+### [Master Node docs](https://github.com/kde2podfreebsd/StatTron/blob/dev/docs/MasterNode.md)
+### [Slave Node docs](https://github.com/kde2podfreebsd/StatTron/blob/dev/docs/SlaveNode.md)
+### [Telegram Admin Bot docs](https://github.com/kde2podfreebsd/StatTron/blob/dev/docs/TGBOT.md)
+### [Frontend docs](https://github.com/kde2podfreebsd/StatTron/blob/dev/docs/TGBOT.md)
 
-## Docker-compose
-#### Чистим кэш докеров
-```shell
-sudo docker stop $(sudo docker ps -a -q)
-sudo docker rm $(sudo docker ps -a -q)
-```
-#### Поднять docker-compose
-```shell
-docker compose -f docker-compose.yaml up -d
-```
+-------
 
-#### Положить docker-compose
-```shell
-docker compose -f docker-compose.yaml down
-docker network prune --force
-```
-
-## Миграции Alembic
-#### Инициализировать миграции
-```shell
-cd Database
-rm alembic.ini
-rm -rf migrations/
-alembic init migrations
-```
-
-#### Изменить sqlalchemy.url в alembic.ini
-```shell
-docker inspect db | grep IPAddress
-----------------------------------
-"SecondaryIPAddresses": null,
-"IPAddress": "",
-        "IPAddress": "192.168.192.2",
-```
-```shell
-----------alembic.ini----------
-postgresql://postgres:postgres@192.168.192.2:5432/postgres
-```
-
-#### Изменить target_metadata в migrations/env.py
-```shell
-from Database.Models.ChannelModel import Base
-target_metadata = Base.metadata
-```
-
-#### Создать миграцию
-```shell
-alembic revision --autogenerate -m 'init'
-```
-
-#### Залить миграции
-```shell
-alembic upgrade heads
-```
-
-## Запуск приложения
-```shell
-uvicorn MasterNode.main:app --workers 4 --host 0.0.0.0 --port 9876
-
-#or
-
-make master_up
-```
+## [Miro](https://miro.com/welcomeonboard/ZFVoMFpLN1puOHpDeGlFaGF6V3VETWFSZFd2TTR5TWRST2xHTnA5Nk51endvUGFjckRDR1lDd3dMemhOc1hpMnwzMDc0NDU3MzYyNzAwMjAzNzUzfDI=?share_link_id=365059543332)
+## [Figma](https://www.figma.com/file/hFtcjJfyj7jAs55EuI5Kww/Untitled?node-id=0-1&t=0NySDQeR04W0NlXg-0)

@@ -1,6 +1,5 @@
 # import asyncio
 import datetime
-from typing import List
 from typing import Optional
 
 from pyrogram import Client
@@ -10,12 +9,15 @@ from responseModel import ChatObject
 from responseModel import Mention
 from responseModel import Post
 from responseModel import UpdateChannel
-from responseModel import UpdatePost
 
-# import uvloop
+# from typing import List
 
-# from typing import Dict
-# from typing import Union
+# from responseModel import UpdatePost
+
+# # import uvloop
+
+# # from typing import Dict
+# # from typing import Union
 
 
 class UserAgent(object):
@@ -156,7 +158,6 @@ class UserAgent(object):
 
                         posts.append(post)
                         offset_id = posts[len(posts) - 1].id_post
-
 
                     # offset_id = posts[len(posts) - 1].id_post
 

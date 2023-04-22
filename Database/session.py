@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from Database.DAL.ChannelDAL import ChannelDAL
 
-# from sqlalchemy.orm import sessionmaker
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
