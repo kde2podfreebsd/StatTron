@@ -39,3 +39,23 @@ class MainPageGraphicMentionPerHour:
     advertising_record_count: int
     advertising_record_percentage: int
     hour: str
+
+@dataclass
+class SearchChannelByLinkAndByName:
+    channel_name: str
+    channel_id: int
+    profile_img_url: str
+    description: str
+    subscribers: int
+    new_subscribers_today: int
+    average_post_views_yesterday: int
+    er: int
+
+@dataclass
+class TripleCharts:
+    advertising_records_1month: int
+    day_1month: date
+    advertising_records_3month: int
+    day_3month: date
+    advertising_records_6month: int
+    day_6month: date

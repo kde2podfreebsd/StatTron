@@ -25,6 +25,7 @@ class Post:
     text: str
     views: int
     id_channel_forward_from: int
+    media_group_id: int | None
 
 
 @dataclass

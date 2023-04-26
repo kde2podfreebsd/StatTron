@@ -22,31 +22,32 @@ async def grabber(go_to_daily_checker: bool = True):
 
         channelsId = await UserAgent.get_channels_ids()
 
+        # for channel_id in channelsId.channel_ids:
+        #     print("channel:" + str(channel_id))
+        #     date_now = datetime.datetime.now()
+        #     if date_now.hour == 15 and date_now.minute == 21:
+        #         go_to_daily_checker = False
+        #         break
+        #
+        #     response = await UserAgent.main_parse_chat(channel_id)
+        #     async with async_session() as session:
+        #             async with session.begin():
+        #                 channel = ChannelDAL(session)
+        #                 await channel._create_channel(
+        #                     id_channel=response.id_channel,
+        #                     name=response.name,
+        #                     link=response.link,
+        #                     avatar_url=response.avatar_url,
+        #                     description=response.description,
+        #                     subs_total=response.subs_total,
+        #                 )
+
+
         for channel_id in channelsId.channel_ids:
-            print(channel_id)
+            print(channelsId.channel_ids)
+            print("chat:" + str(channel_id))
             date_now = datetime.datetime.now()
-            if date_now.hour == 13 and date_now.minute == 2:
-                go_to_daily_checker = False
-                break
-
-            response = await UserAgent.main_parse_chat(channel_id)
-            async with async_session() as session:
-                    async with session.begin():
-                        channel = ChannelDAL(session)
-                        await channel._create_channel(
-                            id_channel=response.id_channel,
-                            name=response.name,
-                            link=response.link,
-                            avatar_url=response.avatar_url,
-                            description=response.description,
-                            subs_total=response.subs_total,
-                        )
-
-
-        for channel_id in channelsId.channel_ids:
-            print(channel_id)
-            date_now = datetime.datetime.now()
-            if date_now.hour == 13 and date_now.minute == 2:
+            if date_now.hour == 15 and date_now.minute == 21:
                 go_to_daily_checker = False
                 break
 
@@ -83,12 +84,12 @@ async def grabber(go_to_daily_checker: bool = True):
                         )
 
 async def daily_checker():
-    print("------------------------------------------------")
+
     channelsId = await UserAgent.get_channels_ids()
     for channel_id in channelsId.channel_ids:
         async with async_session() as session:
             async with session.begin():
-                print(channel_id)
+                print("daily:" + str(channel_id))
                 response = await UserAgent.check_subs_per_day(channel_id)
 
                 sub_per_day = SubPerDayDAL(session)
@@ -108,12 +109,12 @@ uvloop.install()
 asyncio.run(main())
 
 
-# async def mmm():
-#     async with async_session() as session:
-#         async with session.begin():
-#             channels = ChannelDAL(session)
-#             c = await channels.top_channels_by_new_subscribers_today()
-#             for i in c:
-#                 print(i)
-#
-# asyncio.run(mmm())
+async def mmm():
+    async with async_session() as session:
+        async with session.begin():
+            channels = ChannelDAL(session)
+            c = await channels.search_channel_by_link("t.me/ASGasparyan")
+            for i in c:
+                print(i)
+
+asyncio.run(mmm())

@@ -90,7 +90,6 @@ class UserAgent(object):
                     description=chat.description,
                     subs_total=chat.members_count,
                 )
-                print(output)
                 return output
 
         except ValueError or Exception as e:
@@ -132,9 +131,9 @@ class UserAgent(object):
 
                                 text = message.text if message.text is not None else message.caption
 
-                                if (f"@{name}" in str(text)) \
-                                        or (f"t.me/{name}" in str(text)) \
-                                        or (f"{name}" in str(text)) and (name is not None):
+                                if (f"@{name} " in str(text)) \
+                                        or (f"t.me/{name} " in str(text)) \
+                                        or (f"{name} " in str(text)) and (name is not None):
 
                                     mention = Mention(
                                         id_mentioned_channel=stored_channels[name],
@@ -148,25 +147,42 @@ class UserAgent(object):
                             id_channel=chat_id,
                             date=message.date,
                             text=message.text
-                            if message.text is not None
-                            else message.caption,
+                            if message.text is not None else message.caption,
                             views=message.views if message.views is not None else 0,
                             id_channel_forward_from=message.forward_from_chat.id
-                            if message.forward_from_chat is not None
-                            else None,
+                            if message.forward_from_chat is not None else None,
+                            media_group_id=message.media_group_id
+                            if message.media_group_id is not None else None
                         )
 
                         posts.append(post)
                         offset_id = posts[len(posts) - 1].id_post
 
-                    # offset_id = posts[len(posts) - 1].id_post
-
+                mediaGroups = list()
                 i = 1
-                while i < len(posts) - 1:
-                    if posts[i - 1].date == posts[i].date:
-                        del posts[i - 1]
-                        continue
+                while i < len(posts):
+
+                    mediaGroup = list()
+                    if posts[i - 1].media_group_id is not None \
+                            and posts[i - 1].media_group_id == posts[i].media_group_id:
+
+                        while i < len(posts) and posts[i - 1].media_group_id == posts[i].media_group_id:
+                            mediaGroup.append(posts[i - 1])
+                            i += 1
+
+                        mediaGroup.append(posts[i - 1])
+
+                    if len(mediaGroup) != 0:
+
+                        mediaGroups.append(mediaGroup)
+
                     i += 1
+                print(i)
+
+                for mediaGroup in mediaGroups:
+                    for msg in mediaGroup:
+                        if msg.text is None:
+                            posts.remove(msg)
 
             return ChatObject(posts=posts, mentions=mentions)
 
@@ -176,12 +192,10 @@ class UserAgent(object):
     @staticmethod
     async def check_subs_per_day(chat_id: int) -> UpdateChannel:
         try:
-            print(chat_id)
             app = Client("sessions/session")
             async with app as app:
 
                 chat = await app.get_chat(chat_id)
-                print(chat)
                 output = UpdateChannel(
                     id_channel=chat.id, subs_total=chat.members_count
                 )
