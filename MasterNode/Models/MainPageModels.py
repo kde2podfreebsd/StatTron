@@ -70,9 +70,6 @@ class AdvertisingRecordsByDay(TunedModel):
     day_3month: datetime
     advertising_records_6month: int
     day_6month: datetime
-    day_timeframe_1month: int = 30
-    day_timeframe_3month: int = 10
-    day_timeframe_6month: int = 5
 
 
 class AdvertisingRecordsByDayChart(TunedModel):

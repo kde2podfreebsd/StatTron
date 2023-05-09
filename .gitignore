@@ -6,7 +6,6 @@ __pycache__/
 .idea
 .idea/
 
-pyproject.toml
 SlaveNode/UserBotServer/sessions/
 config.ini
 
