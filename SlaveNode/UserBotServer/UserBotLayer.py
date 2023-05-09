@@ -43,6 +43,7 @@ async def grabber(go_to_daily_checker: bool = True):
                         )
 
 
+
         for channel_id in channelsId.channel_ids:
             print(channel_id)
             date_now = datetime.datetime.now()
@@ -82,6 +83,7 @@ async def grabber(go_to_daily_checker: bool = True):
                             id_channel=mention.id_channel
                         )
 
+
 async def daily_checker():
     print("------------------------------------------------")
     channelsId = await UserAgent.get_channels_ids()
@@ -99,10 +101,12 @@ async def daily_checker():
                 )
     await asyncio.sleep(60)
 
+
 async def main():
     while True:
         await grabber()
         await daily_checker()
+
 
 uvloop.install()
 asyncio.run(main())
