@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 
+
 @dataclass
 class MainPageTopChannelsER:
     channel_name: str
@@ -10,6 +11,7 @@ class MainPageTopChannelsER:
     total_views_last_month: int
     channel_id: int
 
+
 @dataclass
 class MainPageTopChannelsUpSubsToday:
     channel_name: str
@@ -17,6 +19,7 @@ class MainPageTopChannelsUpSubsToday:
     subscribers: int
     channel_id: int
     new_subscribers_today: int
+
 
 @dataclass
 class MainPageTopChannelsUpSubsYesterday:
@@ -26,6 +29,7 @@ class MainPageTopChannelsUpSubsYesterday:
     channel_id: int
     new_subscribers_yesterday: int
 
+
 @dataclass
 class MainPageTopChannelsUpSubsWeek:
     channel_name: str
@@ -34,22 +38,25 @@ class MainPageTopChannelsUpSubsWeek:
     channel_id: int
     new_subscribers_week: int
 
+
 @dataclass
 class MainPageGraphicMentionPerHour:
     advertising_record_count: int
     advertising_record_percentage: int
     hour: str
 
+
 @dataclass
 class SearchChannelByLinkAndByName:
-    channel_name: str
-    channel_id: int
-    profile_img_url: str
-    description: str
-    subscribers: int
-    new_subscribers_today: int
-    average_post_views_yesterday: int
-    er: int
+    channel_name: str | None
+    channel_id: int | None
+    profile_img_url: str | None
+    description: str | None
+    subscribers: int | None
+    new_subscribers_today: int | None
+    average_post_views_yesterday: int | None
+    er: int | None
+
 
 @dataclass
 class TripleCharts:

@@ -7,6 +7,7 @@ from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from Database.DAL.ChannelDAL import ChannelDAL
 from Database.session import get_db
 from MasterNode.Models.MainPageModels import AdvertisingRecordsByDay
 from MasterNode.Models.MainPageModels import AdvertisingRecordsByDayChart
@@ -18,11 +19,6 @@ from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_today
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_week
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_yesterday
 from MasterNode.Models.MainPageModels import TopChannelsByNewSubscribers
-
-from Database.DAL.ChannelDAL import ChannelDAL
-from Database.session import async_session
-
-# from Database.DAL import UserDAL
 
 logger = getLogger(__name__)
 
@@ -36,18 +32,18 @@ async def _get_top_active_channels(db) -> Union[TopActiveChannels, None]:
             res = await channel.top_active_channel()
             top_active_channels = []
             for item in res:
-                top_active_channels.append(TopActiveChannel(
-                    channel_name=item.channel_name,
-                    profile_img_url=item.profile_img_url,
-                    description=item.description,
-                    subscribers=item.subscribers,
-                    total_views_last_month=item.total_views_last_month,
-                    channel_id=item.channel_id
-                ))
+                top_active_channels.append(
+                    TopActiveChannel(
+                        channel_name=item.channel_name,
+                        profile_img_url=item.profile_img_url,
+                        description=item.description,
+                        subscribers=item.subscribers,
+                        total_views_last_month=item.total_views_last_month,
+                        channel_id=item.channel_id,
+                    )
+                )
 
-            return TopActiveChannels(
-                top_active_channels=top_active_channels
-            )
+            return TopActiveChannels(top_active_channels=top_active_channels)
 
 
 async def _get_top_channels_by_new_subscribers_today(
@@ -59,13 +55,15 @@ async def _get_top_channels_by_new_subscribers_today(
             res = await channel.top_channels_by_new_subscribers_today()
             top_channels_by_new_subscribers = []
             for item in res:
-                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_today(
-                    channel_name=item.channel_name,
-                    profile_img_url=item.profile_img_url,
-                    subscribers=item.subscribers,
-                    channel_id=item.channel_id,
-                    new_subscribers_today=item.new_subscribers_today,
-                ))
+                top_channels_by_new_subscribers.append(
+                    TopChannelByNewSubscribers_today(
+                        channel_name=item.channel_name,
+                        profile_img_url=item.profile_img_url,
+                        subscribers=item.subscribers,
+                        channel_id=item.channel_id,
+                        new_subscribers_today=item.new_subscribers_today,
+                    )
+                )
 
             return TopChannelsByNewSubscribers(
                 top_channels_by_new_subscribers=top_channels_by_new_subscribers
@@ -81,13 +79,15 @@ async def _get_top_channels_by_new_subscribers_yesterday(
             res = await channel.top_channels_by_new_subscribers_yesterday()
             top_channels_by_new_subscribers = []
             for item in res:
-                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_yesterday(
-                    channel_name=item.channel_name,
-                    profile_img_url=item.profile_img_url,
-                    subscribers=item.subscribers,
-                    channel_id=item.channel_id,
-                    new_subscribers_yesterday=item.new_subscribers_yesterday,
-                ))
+                top_channels_by_new_subscribers.append(
+                    TopChannelByNewSubscribers_yesterday(
+                        channel_name=item.channel_name,
+                        profile_img_url=item.profile_img_url,
+                        subscribers=item.subscribers,
+                        channel_id=item.channel_id,
+                        new_subscribers_yesterday=item.new_subscribers_yesterday,
+                    )
+                )
 
             return TopChannelsByNewSubscribers(
                 top_channels_by_new_subscribers=top_channels_by_new_subscribers
@@ -103,13 +103,15 @@ async def _get_top_channels_by_new_subscribers_week(
             res = await channel.top_channels_by_new_subscribers_week()
             top_channels_by_new_subscribers = []
             for item in res:
-                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_week(
-                    channel_name=item.channel_name,
-                    profile_img_url=item.profile_img_url,
-                    subscribers=item.subscribers,
-                    channel_id=item.channel_id,
-                    new_subscribers_week=item.new_subscribers_week,
-                ))
+                top_channels_by_new_subscribers.append(
+                    TopChannelByNewSubscribers_week(
+                        channel_name=item.channel_name,
+                        profile_img_url=item.profile_img_url,
+                        subscribers=item.subscribers,
+                        channel_id=item.channel_id,
+                        new_subscribers_week=item.new_subscribers_week,
+                    )
+                )
 
             return TopChannelsByNewSubscribers(
                 top_channels_by_new_subscribers=top_channels_by_new_subscribers
@@ -125,14 +127,16 @@ async def _get_advertising_records_by_day_chart(
             res = await channel.advertising_record_by_day_chart()
             advertising_records_by_day_chart = []
             for item in res:
-                advertising_records_by_day_chart.append(AdvertisingRecordsByDay(
-                    advertising_records_1month=item.advertising_records_1month,
-                    day_1month=item.day_1month,
-                    advertising_records_3month=item.advertising_records_3month,
-                    day_3month=item.day_3month,
-                    advertising_records_6month=item.advertising_records_6month,
-                    day_6month=item.day_6month
-                ))
+                advertising_records_by_day_chart.append(
+                    AdvertisingRecordsByDay(
+                        advertising_records_1month=item.advertising_records_1month,
+                        day_1month=item.day_1month,
+                        advertising_records_3month=item.advertising_records_3month,
+                        day_3month=item.day_3month,
+                        advertising_records_6month=item.advertising_records_6month,
+                        day_6month=item.day_6month,
+                    )
+                )
 
             return AdvertisingRecordsByDayChart(
                 advertising_records_by_day_chart=advertising_records_by_day_chart
@@ -148,11 +152,13 @@ async def _get_advertising_records_by_hours_chart(
             res = await channel.advertising_records_by_hours_chart()
             advertising_records_by_hours_chart = []
             for item in res:
-                advertising_records_by_hours_chart.append(AdvertisingRecordsByHours(
-                    advertising_records_count=item.advertising_record_count,
-                    advertising_records_percentage=item.advertising_record_percentage,
-                    hour=item.hour
-                ))
+                advertising_records_by_hours_chart.append(
+                    AdvertisingRecordsByHours(
+                        advertising_records_count=item.advertising_record_count,
+                        advertising_records_percentage=item.advertising_record_percentage,
+                        hour=item.hour,
+                    )
+                )
 
             return AdvertisingRecordsByHoursChart(
                 advertising_records_by_hours_chart=advertising_records_by_hours_chart

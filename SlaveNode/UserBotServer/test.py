@@ -1,6 +1,8 @@
 import asyncio
-from Database.session import async_session
+
 from Database.DAL.ChannelDAL import ChannelDAL
+from Database.session import async_session
+
 # async def mmm():
 #     async with async_session() as session:
 #         async with session.begin():
@@ -12,6 +14,7 @@ from Database.DAL.ChannelDAL import ChannelDAL
 #
 # asyncio.run(mmm())
 
+
 async def mmm():
     async with async_session() as session:
         async with session.begin():
@@ -19,5 +22,6 @@ async def mmm():
             c = await channels.advertising_records_by_hours_chart()
             for i in c:
                 print(i)
+
 
 asyncio.run(mmm())

@@ -14,7 +14,6 @@ async def test(session: AsyncSession = Depends(get_db)):
 
             ChannelDAL(session).top_channels_by_new_subscribers_today()
 
-
             # await new_channel.create_channel()
             #
             # await new_channel.create_channel(

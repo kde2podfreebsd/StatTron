@@ -19,7 +19,7 @@ class MentionDAL:
                     and_(
                         Mention.id_post == id_post,
                         Mention.id_channel == id_channel,
-                        Mention.id_mentioned_channel == id_mentioned_channel
+                        Mention.id_mentioned_channel == id_mentioned_channel,
                     )
                 )
             )
