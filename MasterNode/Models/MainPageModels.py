@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import List
+from typing import List, Any
 
 from pydantic import BaseModel
 
@@ -20,10 +20,10 @@ class TunedModel(BaseModel):
 
 class TopActiveChannel(TunedModel):
     channel_name: str
-    profile_img_url: str
-    description: str
+    profile_img_url: str | None
+    description: str | None
     subscribers: int
-    total_views_last_month: int
+    total_views_last_month: int | None
     channel_id: int
 
 
@@ -65,11 +65,11 @@ class TopChannelsByNewSubscribers(TunedModel):
 
 class AdvertisingRecordsByDay(TunedModel):
     advertising_records_1month: int  # Y axis
-    day_1month: datetime  # X axis
+    day_1month: datetime | Any  # X axis
     advertising_records_3month: int
-    day_3month: datetime
+    day_3month: datetime | Any
     advertising_records_6month: int
-    day_6month: datetime
+    day_6month: datetime | Any
 
 
 class AdvertisingRecordsByDayChart(TunedModel):

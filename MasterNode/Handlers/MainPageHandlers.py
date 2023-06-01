@@ -19,6 +19,9 @@ from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_week
 from MasterNode.Models.MainPageModels import TopChannelByNewSubscribers_yesterday
 from MasterNode.Models.MainPageModels import TopChannelsByNewSubscribers
 
+from Database.DAL.ChannelDAL import ChannelDAL
+from Database.session import async_session
+
 # from Database.DAL import UserDAL
 
 logger = getLogger(__name__)
@@ -27,140 +30,133 @@ main_page_router = APIRouter()
 
 
 async def _get_top_active_channels(db) -> Union[TopActiveChannels, None]:
-    # async with db as session:
-    return TopActiveChannels(
-        top_active_channels=[
-            TopActiveChannel(
-                channel_name="ch1",
-                profile_img_url="abc",
-                description="qwe",
-                subscribers=100,
-                total_views_last_month=5000,
-                channel_id=-123498765,
-            ),
-            TopActiveChannel(
-                channel_name="ch2",
-                profile_img_url="abc",
-                description="qwe",
-                subscribers=100,
-                total_views_last_month=5000,
-                channel_id=-123498765,
-            ),
-        ]
-    )
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.top_active_channel()
+            top_active_channels = []
+            for item in res:
+                top_active_channels.append(TopActiveChannel(
+                    channel_name=item.channel_name,
+                    profile_img_url=item.profile_img_url,
+                    description=item.description,
+                    subscribers=item.subscribers,
+                    total_views_last_month=item.total_views_last_month,
+                    channel_id=item.channel_id
+                ))
+
+            return TopActiveChannels(
+                top_active_channels=top_active_channels
+            )
 
 
 async def _get_top_channels_by_new_subscribers_today(
     db,
 ) -> Union[TopChannelsByNewSubscribers, None]:
-    # async with db as session:
-    #     async with session.begin():
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.top_channels_by_new_subscribers_today()
+            top_channels_by_new_subscribers = []
+            for item in res:
+                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_today(
+                    channel_name=item.channel_name,
+                    profile_img_url=item.profile_img_url,
+                    subscribers=item.subscribers,
+                    channel_id=item.channel_id,
+                    new_subscribers_today=item.new_subscribers_today,
+                ))
 
-    return TopChannelsByNewSubscribers(
-        top_channels_by_new_subscribers=[
-            TopChannelByNewSubscribers_today(
-                channel_name="TopChannelByNewSubscribers_today",
-                profile_img_url="123",
-                subscribers=123,
-                channel_id=-123,
-                new_subscribers_today=111,
-            ),
-            TopChannelByNewSubscribers_today(
-                channel_name="TopChannelByNewSubscribers_today",
-                profile_img_url="1233",
-                subscribers=123,
-                channel_id=-1235,
-                new_subscribers_today=111,
-            ),
-        ]
-    )
+            return TopChannelsByNewSubscribers(
+                top_channels_by_new_subscribers=top_channels_by_new_subscribers
+            )
 
 
 async def _get_top_channels_by_new_subscribers_yesterday(
     db,
 ) -> Union[TopChannelsByNewSubscribers, None]:
-    # async with db as session:
-    #     async with session.begin():
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.top_channels_by_new_subscribers_yesterday()
+            top_channels_by_new_subscribers = []
+            for item in res:
+                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_yesterday(
+                    channel_name=item.channel_name,
+                    profile_img_url=item.profile_img_url,
+                    subscribers=item.subscribers,
+                    channel_id=item.channel_id,
+                    new_subscribers_yesterday=item.new_subscribers_yesterday,
+                ))
 
-    return TopChannelsByNewSubscribers(
-        top_channels_by_new_subscribers=[
-            TopChannelByNewSubscribers_yesterday(
-                channel_name="TopChannelByNewSubscribers_yesterday",
-                profile_img_url="123",
-                subscribers=123,
-                channel_id=-123,
-                new_subscribers_yesterday=111,
-            ),
-            TopChannelByNewSubscribers_yesterday(
-                channel_name="TopChannelByNewSubscribers_yesterday",
-                profile_img_url="1233",
-                subscribers=123,
-                channel_id=-1235,
-                new_subscribers_yesterday=111,
-            ),
-        ]
-    )
+            return TopChannelsByNewSubscribers(
+                top_channels_by_new_subscribers=top_channels_by_new_subscribers
+            )
 
 
 async def _get_top_channels_by_new_subscribers_week(
     db,
 ) -> Union[TopChannelsByNewSubscribers, None]:
-    # async with db as session:
-    #     async with session.begin():
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.top_channels_by_new_subscribers_week()
+            top_channels_by_new_subscribers = []
+            for item in res:
+                top_channels_by_new_subscribers.append(TopChannelByNewSubscribers_week(
+                    channel_name=item.channel_name,
+                    profile_img_url=item.profile_img_url,
+                    subscribers=item.subscribers,
+                    channel_id=item.channel_id,
+                    new_subscribers_week=item.new_subscribers_week,
+                ))
 
-    return TopChannelsByNewSubscribers(
-        top_channels_by_new_subscribers=[
-            TopChannelByNewSubscribers_week(
-                channel_name="TopChannelByNewSubscribers_week",
-                profile_img_url="123",
-                subscribers=123,
-                channel_id=-123,
-                new_subscribers_week=111,
-            ),
-            TopChannelByNewSubscribers_week(
-                channel_name="TopChannelByNewSubscribers_week",
-                profile_img_url="1233",
-                subscribers=123,
-                channel_id=-1235,
-                new_subscribers_week=111,
-            ),
-        ]
-    )
+            return TopChannelsByNewSubscribers(
+                top_channels_by_new_subscribers=top_channels_by_new_subscribers
+            )
 
 
 async def _get_advertising_records_by_day_chart(
     db,
 ) -> Union[AdvertisingRecordsByDayChart, None]:
-    # async with db as session:
-    #     async with session.begin():
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.advertising_record_by_day_chart()
+            advertising_records_by_day_chart = []
+            for item in res:
+                advertising_records_by_day_chart.append(AdvertisingRecordsByDay(
+                    advertising_records_1month=item.advertising_records_1month,
+                    day_1month=item.day_1month,
+                    advertising_records_3month=item.advertising_records_3month,
+                    day_3month=item.day_3month,
+                    advertising_records_6month=item.advertising_records_6month,
+                    day_6month=item.day_6month
+                ))
 
-    return AdvertisingRecordsByDayChart(
-        advertising_records_by_day_chart=[
-            AdvertisingRecordsByDay(
-                advertising_records_1month=10,
-                day_1month=datetime(2022, 12, 1),
-                advertising_records_3month=30,
-                day_3month=datetime(2022, 11, 1),
-                advertising_records_6month=60,
-                day_6month=datetime(2022, 10, 1),
+            return AdvertisingRecordsByDayChart(
+                advertising_records_by_day_chart=advertising_records_by_day_chart
             )
-        ]
-    )
 
 
 async def _get_advertising_records_by_hours_chart(
     db,
 ) -> Union[AdvertisingRecordsByHoursChart, None]:
+    async with db as session:
+        async with session.begin():
+            channel = ChannelDAL(session)
+            res = await channel.advertising_records_by_hours_chart()
+            advertising_records_by_hours_chart = []
+            for item in res:
+                advertising_records_by_hours_chart.append(AdvertisingRecordsByHours(
+                    advertising_records_count=item.advertising_record_count,
+                    advertising_records_percentage=item.advertising_record_percentage,
+                    hour=item.hour
+                ))
 
-    return AdvertisingRecordsByHoursChart(
-        advertising_records_by_hours_chart=[
-            AdvertisingRecordsByHours(
-                advertising_records_count=10,
-                advertising_records_percentage=20.12,
-                hour="13:00",
+            return AdvertisingRecordsByHoursChart(
+                advertising_records_by_hours_chart=advertising_records_by_hours_chart
             )
-        ]
-    )
 
 
 @main_page_router.get("/top_active_channels", response_model=TopActiveChannels)
