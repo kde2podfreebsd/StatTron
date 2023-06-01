@@ -21,6 +21,8 @@ from responseModel import UpdateChannel
 
 
 class UserAgent(object):
+    def __init__(self):
+        self.app = Client("sessions/session")
     @staticmethod
     async def main():
         async with Client(
@@ -28,33 +30,26 @@ class UserAgent(object):
         ) as app:
             await app.send_message("me", "Greetings from **Pyrogram**!")
 
-    @staticmethod
-    async def join_chat(chat_id: int | str):
+    async def join_chat(self, chat_id: int | str):
         try:
-            app = Client("sessions/session")
-            async with app as app:
+            async with self.app as app:
                 await app.join_chat(chat_id)
                 return True
 
         except Exception as e:
             print(e)
 
-    @staticmethod
-    async def leave_chat(chat_id: str | int):
+    async def leave_chat(self, chat_id: str | int):
         try:
-            app = Client("sessions/session")
-            async with app as app:
+            async with self.app as app:
                 await app.leave_chat(chat_id)
                 return True
 
         except Exception as e:
             print(e)
-
-    @staticmethod
-    async def get_channels_ids() -> ChannelIds:
+    async def get_channels_ids(self) -> ChannelIds:
         try:
-            app = Client("sessions/session")
-            async with app as app:
+            async with self.app as app:
                 chat_ids = list()
                 async for dialog in app.get_dialogs():
                     if str(dialog.chat.type) == "ChatType.CHANNEL":
@@ -64,11 +59,9 @@ class UserAgent(object):
         except Exception as e:
             print(e)
 
-    @staticmethod
-    async def main_parse_chat(chat_id: int | str) -> ChannelObject:
+    async def main_parse_chat(self, chat_id: int | str) -> ChannelObject:
         try:
-            app = Client("sessions/session")
-            async with app as app:
+            async with self.app as app:
 
                 chat = await app.get_chat(chat_id)
 
@@ -95,16 +88,13 @@ class UserAgent(object):
         except ValueError or Exception as e:
             print(e)
 
-    @staticmethod
     async def parse_chat(
         chat_id: int,
         stored_channels: Optional[dict[str, int]] = None,
         days_for_date_offset: int = 183,
     ) -> ChatObject:
         try:
-            app = Client("sessions/session")
-
-            async with app as app:
+            async with self.app as app:
                 posts = []
                 mentions = []
                 iterate_status = True
@@ -209,8 +199,7 @@ class UserAgent(object):
     @staticmethod
     async def check_subs_per_day(chat_id: int) -> UpdateChannel:
         try:
-            app = Client("sessions/session")
-            async with app as app:
+            async with self.app as app:
 
                 chat = await app.get_chat(chat_id)
                 output = UpdateChannel(
