@@ -1,4 +1,5 @@
 import datetime
+
 from sqlalchemy import and_
 from sqlalchemy import select
 from sqlalchemy import update
@@ -31,12 +32,9 @@ class PostDAL:
                 id_channel_forward_from = None
 
             not_empty = await self.db_session.execute(
-                    select(Post).where(
-                        and_(
-                            Post.id_post == id_post,
-                            Post.id_channel == id_channel
-                        )
-                    )
+                select(Post).where(
+                    and_(Post.id_post == id_post, Post.id_channel == id_channel)
+                )
             )
             not_empty = not_empty.fetchone()
 
@@ -54,14 +52,12 @@ class PostDAL:
                 return new_post
 
             else:
-                query = update(Post).where(
-                    and_(
-                        Post.id_post == id_post,
-                        Post.id_channel == id_channel
-                    )
-                ).values(
-                    views=views
-                ).returning(Post)
+                query = (
+                    update(Post)
+                    .where(and_(Post.id_post == id_post, Post.id_channel == id_channel))
+                    .values(views=views)
+                    .returning(Post)
+                )
 
                 res = await self.db_session.execute(query)
                 post_row = res.fetchone()

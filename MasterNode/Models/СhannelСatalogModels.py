@@ -17,14 +17,14 @@ class TunedModel(BaseModel):
 
 
 class Channel(TunedModel):
-    channel_name: str
-    channel_id: int
-    profile_img_url: str
-    description: str
-    subscribers: int
-    new_subscribers_today: int
-    average_post_views_yesterday: int
-    er: float
+    channel_name: str | None
+    channel_id: int | None
+    profile_img_url: str | None
+    description: str | None
+    subscribers: int | None
+    new_subscribers_today: int | None
+    average_post_views_yesterday: int | None
+    er: float | None
 
 
 class ChannelsList(TunedModel):

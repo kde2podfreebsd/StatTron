@@ -12,9 +12,10 @@ async def test(session: AsyncSession = Depends(get_db)):
     async with session:
         async with session.begin():
 
-            ChannelDAL(session)
-            print("kek")
+            ChannelDAL(session).top_channels_by_new_subscribers_today()
 
+            # await new_channel.create_channel()
+            #
             # await new_channel.create_channel(
             #     id_channel=123,
             #     name="123",

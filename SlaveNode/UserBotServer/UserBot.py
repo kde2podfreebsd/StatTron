@@ -89,7 +89,9 @@ class UserAgent(object):
             print(e)
 
     async def parse_chat(
-        self, chat_id: int, stored_channels: Optional[dict[str, int]] = None, days_for_date_offset: int = 183
+        chat_id: int,
+        stored_channels: Optional[dict[str, int]] = None,
+        days_for_date_offset: int = 183,
     ) -> ChatObject:
         try:
             async with self.app as app:
@@ -119,11 +121,18 @@ class UserAgent(object):
                         if stored_channels is not None:
                             for name in stored_channels:
 
-                                text = message.text if message.text is not None else message.caption
+                                text = (
+                                    message.text
+                                    if message.text is not None
+                                    else message.caption
+                                )
 
-                                if (f"@{name} " in str(text)) \
-                                        or (f"t.me/{name} " in str(text)) \
-                                        or (f"{name} " in str(text)) and (name is not None):
+                                if (
+                                    (f"@{name} " in str(text))
+                                    or (f"t.me/{name} " in str(text))
+                                    or (f"{name} " in str(text))
+                                    and (name is not None)
+                                ):
 
                                     mention = Mention(
                                         id_mentioned_channel=stored_channels[name],
@@ -137,12 +146,15 @@ class UserAgent(object):
                             id_channel=chat_id,
                             date=message.date,
                             text=message.text
-                            if message.text is not None else message.caption,
+                            if message.text is not None
+                            else message.caption,
                             views=message.views if message.views is not None else 0,
                             id_channel_forward_from=message.forward_from_chat.id
-                            if message.forward_from_chat is not None else None,
+                            if message.forward_from_chat is not None
+                            else None,
                             media_group_id=message.media_group_id
-                            if message.media_group_id is not None else None
+                            if message.media_group_id is not None
+                            else None,
                         )
 
                         posts.append(post)
@@ -153,10 +165,15 @@ class UserAgent(object):
                 while i < len(posts):
 
                     mediaGroup = list()
-                    if posts[i - 1].media_group_id is not None \
-                            and posts[i - 1].media_group_id == posts[i].media_group_id:
+                    if (
+                        posts[i - 1].media_group_id is not None
+                        and posts[i - 1].media_group_id == posts[i].media_group_id
+                    ):
 
-                        while i < len(posts) and posts[i - 1].media_group_id == posts[i].media_group_id:
+                        while (
+                            i < len(posts)
+                            and posts[i - 1].media_group_id == posts[i].media_group_id
+                        ):
                             mediaGroup.append(posts[i - 1])
                             i += 1
 
@@ -176,10 +193,11 @@ class UserAgent(object):
 
             return ChatObject(posts=posts, mentions=mentions)
 
-
         except ValueError or Exception as e:
             print(e)
-    async def check_subs_per_day(self, chat_id: int) -> UpdateChannel:
+
+    @staticmethod
+    async def check_subs_per_day(chat_id: int) -> UpdateChannel:
         try:
             async with self.app as app:
 

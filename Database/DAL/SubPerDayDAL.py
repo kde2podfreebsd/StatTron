@@ -1,4 +1,5 @@
 import datetime
+
 from sqlalchemy import and_
 from sqlalchemy import select
 from sqlalchemy import update
@@ -17,10 +18,7 @@ class SubPerDayDAL:
 
         not_empty = await self.db_session.execute(
             select(SubPerDay).where(
-                and_(
-                    SubPerDay.date == date,
-                    SubPerDay.id_channel == id_channel
-                )
+                and_(SubPerDay.date == date, SubPerDay.id_channel == id_channel)
             )
         )
         not_empty = not_empty.fetchone()
@@ -33,17 +31,14 @@ class SubPerDayDAL:
 
         else:
 
-            query = update(SubPerDay).where(
-                and_(
-                    SubPerDay.date == date,
-                    SubPerDay.id_channel == id_channel
-                )
-            ).values(
-                subs=subs
-            ).returning(SubPerDay)
+            query = (
+                update(SubPerDay)
+                .where(and_(SubPerDay.date == date, SubPerDay.id_channel == id_channel))
+                .values(subs=subs)
+                .returning(SubPerDay)
+            )
 
             res = await self.db_session.execute(query)
             subPerDay_row = res.fetchone()
             if subPerDay_row is not None:
                 return subPerDay_row[0]
-

@@ -17,15 +17,11 @@ app = FastAPI(title="StatTron Master Node")
 main_api_router = APIRouter()
 
 main_api_router.include_router(
-    main_page_router,
-    prefix="/main_page",
-    tags=["main_page"]
+    main_page_router, prefix="/main_page", tags=["main_page"]
 )
 
 main_api_router.include_router(
-    channel_catalog_router,
-    prefix="/channel_catalog",
-    tags=["channel_catalog"]
+    channel_catalog_router, prefix="/channel_catalog", tags=["channel_catalog"]
 )
 
 main_api_router.include_router(
