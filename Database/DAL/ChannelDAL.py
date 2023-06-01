@@ -1,4 +1,3 @@
-from math import floor
 from sqlalchemy import and_
 from sqlalchemy import select
 from sqlalchemy import update
@@ -10,6 +9,8 @@ from SlaveNode.UserBotServer.responseRoute import MainPageTopChannelsUpSubsToday
 from SlaveNode.UserBotServer.responseRoute import MainPageTopChannelsUpSubsYesterday
 from SlaveNode.UserBotServer.responseRoute import MainPageTopChannelsUpSubsWeek
 from SlaveNode.UserBotServer.responseRoute import MainPageGraphicMentionPerHour
+from SlaveNode.UserBotServer.responseRoute import SearchChannelByLinkAndByName
+from SlaveNode.UserBotServer.responseRoute import TripleCharts
 from typing import Union, List
 
 
@@ -76,32 +77,34 @@ class ChannelDAL:
         if channel_row is not None:
             return channel_row[0]
 
+
     async def top_active_channel(self):
+        """Return top active channels for maximum ER for 1 week from 50% top channels by total subscribers"""
         query = """
                 SELECT
                 name,
                 avatar_url,
                 description,
                 subs_total,
-                CAST(tv.total_views AS bigint),
+                CAST(COALESCE(tv.total_views, 0) AS bigint),
                 channel.id_channel,
-                CAST(ROUND(avg_views_per_post / subs_total * 100) AS smallint) AS ER
+                CAST(ROUND(COALESCE(avg_views_per_post, 0) / subs_total * 100) AS smallint) AS ER
                 FROM channel
-                INNER JOIN (SELECT id_channel, (sum(views) / count(id_post)) as avg_views_per_post from post
-                            WHERE post.date > now() - interval '3 day'
+                LEFT JOIN (SELECT id_channel, (sum(views) / count(id_post)) as avg_views_per_post from post
+                            WHERE post.date > now() - interval '7 day'
                             GROUP BY id_channel) AS avg
-            
+                
                             ON channel.id_channel = avg.id_channel
                 
-                INNER JOIN (SELECT post.id_channel, SUM(views) AS total_views 
+                LEFT JOIN (SELECT post.id_channel, SUM(views) AS total_views 
                             FROM channel
                             INNER JOIN post ON channel.id_channel = post.id_channel
-                                                AND now() - post.date < interval '31 day'
+                                                AND now() - post.date < interval '30 day'
                             GROUP BY post.id_channel) AS tv
-                            
+                
                             ON channel.id_channel = tv.id_channel
-            
-                WHERE channel.subs_total > ANY(SELECT subs_total FROM channel
+                
+                WHERE channel.subs_total >= ANY(SELECT subs_total FROM channel
                                                 ORDER BY subs_total DESC
                                                 LIMIT ROUND(0.5 * (SELECT count(*) FROM channel)))
                 ORDER BY ER DESC
@@ -127,15 +130,16 @@ class ChannelDAL:
             return response
 
     async def top_channels_by_new_subscribers_today(self):
+        """Returns the top channels by subscriber growth for that day"""
         query = """
                 SELECT
                 channel.name,
                 channel.avatar_url,
                 channel.subs_total,
                 channel.id_channel,
-                channel.subs_total - yesterday.subs AS grow
+                channel.subs_total - COALESCE(yesterday.subs, 0) AS grow
                 FROM channel
-                INNER JOIN 
+                LEFT JOIN 
                         (SELECT subs, id_channel FROM sub_per_day
                         WHERE date = date(now()) - interval '1 day') AS yesterday
                         USING(id_channel)
@@ -161,21 +165,22 @@ class ChannelDAL:
             return response
 
     async def top_channels_by_new_subscribers_yesterday(self):
+        """Returns the top channels by subscriber growth for last day"""
         query = """
                 SELECT 
                 channel.name,
                 channel.avatar_url,
                 channel.subs_total,
                 channel.id_channel,
-                one_day_ago.subs - two_day_ago.subs AS grow
+                COALESCE(one_day_ago.subs - two_day_ago.subs, 0) AS grow
                 FROM channel
-                    INNER JOIN (SELECT subs, id_channel, date FROM sub_per_day
+                    LEFT JOIN (SELECT subs, id_channel, date FROM sub_per_day
                                 WHERE date = date(now()) - interval '1 day') AS one_day_ago
                                 USING(id_channel)
-                    INNER JOIN (SELECT subs, id_channel, date FROM sub_per_day
+                    LEFT JOIN (SELECT subs, id_channel, date FROM sub_per_day
                                 WHERE date = date(now()) - interval '2 day') AS two_day_ago
                                 USING(id_channel)
-                                
+            
                 ORDER BY 5 DESC, 1 ASC
                 LIMIT 6
                 """
@@ -198,18 +203,19 @@ class ChannelDAL:
             return response
 
     async def top_channels_by_new_subscribers_week(self):
+        """Returns the top channels by subscriber growth for last week"""
         query = """
                 SELECT
                 channel.name,
                 channel.avatar_url,
                 channel.subs_total,
                 channel.id_channel,
-                channel.subs_total - one_week_ago.subs AS grow
+                COALESCE(channel.subs_total - one_week_ago.subs, 0) AS grow
                 FROM channel
-                INNER JOIN 
-                        (SELECT subs, id_channel FROM sub_per_day
-                        WHERE date = date(now()) - interval '1 week') AS one_week_ago
-                        USING(id_channel)
+                LEFT JOIN 
+                    (SELECT subs, id_channel FROM sub_per_day
+                    WHERE date = date(now()) - interval '1 week') AS one_week_ago
+                    USING(id_channel)
                 ORDER BY 5 DESC, 1 ASC
                 LIMIT 6
                 """
@@ -230,25 +236,108 @@ class ChannelDAL:
 
             return response
 
+    async def advertising_record_by_day_chart(self):
+        """Returns 30 points for each of 3 charts for 1/3/6 months"""
+
+        query_one_months = """
+                            SELECT
+                            last_30_day_dates::date,    
+                            COALESCE(flt.count_posts, 0)
+                            FROM generate_series(current_date::date, (current_date - interval '29 day')::date, - interval '1 day'::interval) AS last_30_day_dates
+                            
+                            LEFT JOIN
+                            (
+                                SELECT
+                                date_trunc('day', date)::date AS date,
+                                COUNT(mention.id_post) AS count_posts
+                                FROM mention
+                                    INNER JOIN post ON post.id_post = mention.id_post
+                                                    AND post.id_channel = mention.id_channel
+                                                    AND post.date > now() - interval '30 day'
+                                WHERE mention.id_mentioned_channel <> mention.id_channel
+                                GROUP BY 1
+                                LIMIT 30
+                            ) AS flt
+                            ON last_30_day_dates::date = flt.date
+                            ORDER BY 1 DESC
+                            """
+
+        query_three_months = """
+                            SELECT to_timestamp(var.period_3_day * 259200)::date, count 
+                            FROM
+                                (SELECT
+                                FLOOR(EXTRACT('epoch' from date) / 259200) AS period_3_day,
+                                COUNT(mention.id_post) AS count
+                                FROM post
+                                    LEFT JOIN mention ON post.id_post = mention.id_post
+                                            AND post.id_channel = mention.id_channel
+                                            AND mention.id_channel <> mention.id_mentioned_channel
+                                GROUP BY 1
+                                ORDER BY 1 DESC
+                                LIMIT 30) AS var
+                            """
+
+        query_six_months = """
+                            SELECT to_timestamp(var.period_3_day * 518400)::date, count 
+                            FROM
+                                (SELECT
+                                FLOOR(EXTRACT('epoch' from date) / 518400) AS period_3_day,
+                                COUNT(mention.id_post) AS count
+                                FROM post
+                                    LEFT JOIN mention ON post.id_post = mention.id_post
+                                            AND post.id_channel = mention.id_channel
+                                            AND mention.id_channel <> mention.id_mentioned_channel
+                                GROUP BY 1
+                                ORDER BY 1 DESC
+                                LIMIT 30) AS var
+                            """
+        res_1 = await self.db_session.execute(text(query_one_months))
+        res_3 = await self.db_session.execute(text(query_three_months))
+        res_6 = await self.db_session.execute(text(query_six_months))
+
+        chart_1_month = res_1.fetchall()
+        chart_3_month = res_3.fetchall()
+        chart_6_month = res_6.fetchall()
+
+        response: List[TripleCharts] = list()
+
+        for x, y, z in zip(chart_1_month, chart_3_month, chart_6_month):
+
+            response.append(
+                TripleCharts(
+                    day_1month=x[0],
+                    advertising_records_1month=x[1],
+                    day_3month=y[0],
+                    advertising_records_3month=y[1],
+                    day_6month=z[0],
+                    advertising_records_6month=z[1]
+                )
+            )
+
+        return response
+
     async def advertising_records_by_hours_chart(self):
         query = """
                 SELECT 
-                COUNT(mention.id_post) AS mentions_per_hour,
-                CAST(
-                    ROUND(
-                        CAST(COUNT(mention.id_post) AS NUMERIC) * 100 
-                        / 
-                        CAST((SELECT COUNT(*) FROM mention WHERE mention.id_channel <> mention.id_mentioned_channel) AS NUMERIC)
-                        , 2) 
-                AS FLOAT) AS percent,
-                EXTRACT(HOUR FROM post.date) AS hour
-                FROM mention
-                    INNER JOIN post ON mention.id_post = post.id_post 
-                                    AND mention.id_channel = post.id_channel
-                    
-                WHERE mention.id_channel <> mention.id_mentioned_channel
-                GROUP BY 3
-                ORDER BY 3 
+                COALESCE(count_per_hour, 0),
+                CAST(COALESCE(percent, 0) AS float),
+                calendar.hours
+                FROM
+                (SELECT hours FROM generate_series(1, 24) AS hours) AS calendar 
+                LEFT JOIN 
+                (
+                    SELECT
+                    EXTRACT(hour FROM post.date) AS hour,
+                    COUNT(mention.id_post) AS count_per_hour,
+                    ROUND(CAST(COUNT(mention.id_post) AS NUMERIC) * 100
+                    / CAST((SELECT COUNT(*) FROM mention WHERE mention.id_channel <> mention.id_mentioned_channel) AS NUMERIC), 2) AS percent
+                    FROM mention
+                    INNER JOIN post ON post.id_channel = mention.id_channel
+                                    AND post.id_post = mention.id_post
+                                    AND mention.id_channel <> id_mentioned_channel
+                    GROUP BY hour) AS var
+                ON calendar.hours = hour
+                ORDER BY 3
                 """
         res = await self.db_session.execute(text(query))
         mentions_row = res.fetchall()
@@ -264,6 +353,159 @@ class ChannelDAL:
                 )
 
             return response
+
+    async def search_channel_by_link(self, url: str):
+        username = str()
+
+        if "t.me" in url:
+            username = url.split("/")[-1]
+            if username == "":
+                username = url.split('/')[-2]
+
+            query = f"""
+                    SELECT 
+                    channel.name,
+                    channel.id_channel,
+                    channel.avatar_url,
+                    channel.description,
+                    channel.subs_total,
+                    COALESCE(channel.subs_total - yesterday_subs.subs, 0) AS new_subs_today,
+                    CAST(COALESCE(avg_yesterday.avg_views_per_post, 0) AS int) as avg_views_per_post,
+                    CAST(ROUND(COALESCE(avg_3_last_days.avg_views_per_post, 0) / channel.subs_total * 100) AS smallint) AS ER
+                    FROM channel
+                        LEFT JOIN (SELECT 
+                                    id_channel,
+                                    FLOOR(SUM(views) / COUNT(id_post)) as avg_views_per_post 
+                                    FROM post
+                                    WHERE post.date::date = (current_date - interval '1 day')::date
+                                    GROUP BY id_channel) AS avg_yesterday
+                                    ON channel.id_channel = avg_yesterday.id_channel
+                                    
+                        LEFT JOIN (SELECT subs, id_channel FROM sub_per_day
+                                    WHERE date = date(now()) - interval '1 day') AS yesterday_subs
+                                    ON channel.id_channel = yesterday_subs.id_channel
+                                    
+                        LEFT JOIN (SELECT 
+                                    id_channel, 
+                                    SUM(views) / COUNT(id_post) as avg_views_per_post
+                                    FROM post
+                                    WHERE post.date > now() - interval '3 days'
+                                    GROUP BY id_channel) AS avg_3_last_days
+                                    ON channel.id_channel = avg_3_last_days.id_channel
+                    WHERE channel.link LIKE '%{username}'
+                   """
+            res = await self.db_session.execute(text(query))
+            channel_row = res.fetchall()
+            if res is not None:
+                response: List[SearchChannelByLinkAndByName] = list()
+                for channel in channel_row:
+                    response.append(
+                        SearchChannelByLinkAndByName(
+                            channel_name=channel[0],
+                            channel_id=channel[1],
+                            profile_img_url=channel[2],
+                            description=channel[3],
+                            subscribers=channel[4],
+                            new_subscribers_today=channel[5],
+                            average_post_views_yesterday=channel[6],
+                            er=channel[7]
+                        )
+                    )
+
+                return response
+        else:
+            return []
+
+    async def search_by_username(self, name: str, page: int):
+
+        name = name.lower().split()
+        query = f"""
+                SELECT 
+                channel.name,
+                channel.id_channel,
+                channel.avatar_url,
+                channel.description,
+                channel.subs_total,
+                COALESCE(channel.subs_total - yesterday_subs.subs, 0) AS new_subs_today,
+                CAST(COALESCE(avg_yesterday.avg_views_per_post, 0) AS int) as avg_views_per_post,
+                CAST(ROUND(COALESCE(avg_3_last_days.avg_views_per_post, 0) / channel.subs_total * 100) AS smallint) AS ER
+                FROM channel
+                    LEFT JOIN (SELECT 
+                                id_channel,
+                                FLOOR(SUM(views) / COUNT(id_post)) as avg_views_per_post 
+                                FROM post
+                                WHERE post.date::date = (current_date - interval '1 day')::date
+                                GROUP BY id_channel) AS avg_yesterday
+                                ON channel.id_channel = avg_yesterday.id_channel
+            
+                    LEFT JOIN (SELECT subs, id_channel FROM sub_per_day
+                                WHERE date = date(now()) - interval '1 day') AS yesterday_subs
+                                ON channel.id_channel = yesterday_subs.id_channel
+            
+                    LEFT JOIN (SELECT 
+                                id_channel, 
+                                SUM(views) / COUNT(id_post) as avg_views_per_post
+                                FROM post
+                                WHERE post.date > now() - interval '3 days'
+                                GROUP BY id_channel) AS avg_3_last_days
+                                ON channel.id_channel = avg_3_last_days.id_channel
+                WHERE LOWER(channel.name) SIMILAR TO '%({"|".join(name)})%'
+                ORDER BY channel.name
+                LIMIT {6 * page} OFFSET {6 * (page - 1)}
+                """
+
+        res = await self.db_session.execute(text(query))
+        channel_row = res.fetchall()
+
+        if res is not None:
+
+            response_count: int
+            response_channel: List[SearchChannelByLinkAndByName] = list()
+
+            query = f"""
+                    SELECT 
+                    count(channel.id_channel)
+                    FROM channel
+                        LEFT JOIN (SELECT 
+                                    id_channel,
+                                    FLOOR(SUM(views) / COUNT(id_post)) as avg_views_per_post 
+                                    FROM post
+                                    WHERE post.date::date = (current_date - interval '1 day')::date
+                                    GROUP BY id_channel) AS avg_yesterday
+                                    ON channel.id_channel = avg_yesterday.id_channel
+                
+                        LEFT JOIN (SELECT subs, id_channel FROM sub_per_day
+                                    WHERE date = date(now()) - interval '1 day') AS yesterday_subs
+                                    ON channel.id_channel = yesterday_subs.id_channel
+                
+                        LEFT JOIN (SELECT 
+                                    id_channel, 
+                                    SUM(views) / COUNT(id_post) as avg_views_per_post
+                                    FROM post
+                                    WHERE post.date > now() - interval '3 days'
+                                    GROUP BY id_channel) AS avg_3_last_days
+                                    ON channel.id_channel = avg_3_last_days.id_channel
+                    WHERE LOWER(channel.name) SIMILAR TO '%({"|".join(name)})%'
+                    """
+            res = await self.db_session.execute(text(query))
+            count_row = res.fetchone()
+            response_count = count_row[0]
+
+            for channel in channel_row:
+                response_channel.append(
+                    SearchChannelByLinkAndByName(
+                        channel_name=channel[0],
+                        channel_id=channel[1],
+                        profile_img_url=channel[2],
+                        description=channel[3],
+                        subscribers=channel[4],
+                        new_subscribers_today=channel[5],
+                        average_post_views_yesterday=channel[6],
+                        er=channel[7]
+                    )
+                )
+
+            return [response_channel, response_count]
 
     # async def delete_user(self, user_id: UUID) -> Union[UUID, None]:
     #     query = (
