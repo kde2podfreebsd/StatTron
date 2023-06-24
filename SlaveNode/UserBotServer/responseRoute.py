@@ -66,3 +66,12 @@ class TripleCharts:
     day_3month: date
     advertising_records_6month: int
     day_6month: date
+
+
+@dataclass
+class TopActiveChannelByER72hours:
+    channel_name: str
+    profile_img_url: str
+    subscribers: int
+    channel_id: int
+    er_72_hours: int

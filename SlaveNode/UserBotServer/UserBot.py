@@ -22,11 +22,14 @@ from responseModel import UpdateChannel
 
 class UserAgent(object):
     def __init__(self):
-        self.app = Client("sessions/session")
+        self.app = Client("sessions/session1")
     @staticmethod
     async def main():
         async with Client(
-            "sessions/session", 23677472, "6945657dfb3f7d10558065c24bd8d904"
+            name="sessions/session1",
+            api_id=23677472,
+            api_hash="6945657dfb3f7d10558065c24bd8d904",
+            sleep_threshold=30
         ) as app:
             await app.send_message("me", "Greetings from **Pyrogram**!")
 
@@ -89,6 +92,7 @@ class UserAgent(object):
             print(e)
 
     async def parse_chat(
+        self,
         chat_id: int,
         stored_channels: Optional[dict[str, int]] = None,
         days_for_date_offset: int = 183,
@@ -107,6 +111,7 @@ class UserAgent(object):
                     async for message in app.get_chat_history(
                         chat_id=chat_id, offset_id=offset_id, limit=100
                     ):
+                        # print(message.id)
                         if message.views == 0:
                             continue
 
@@ -190,14 +195,13 @@ class UserAgent(object):
                     for msg in mediaGroup:
                         if msg.text is None:
                             posts.remove(msg)
-
+                print("kkk")
             return ChatObject(posts=posts, mentions=mentions)
 
         except ValueError or Exception as e:
             print(e)
 
-    @staticmethod
-    async def check_subs_per_day(chat_id: int) -> UpdateChannel:
+    async def check_subs_per_day(self, chat_id: int) -> UpdateChannel:
         try:
             async with self.app as app:
 

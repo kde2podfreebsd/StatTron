@@ -20,15 +20,15 @@ async def grabber(client, go_to_daily_checker: bool = True):
             break
 
         channelsId = await client.get_channels_ids()
-
+        # channelsId.channel_ids = [-1001315735637]
         for channel_id in channelsId.channel_ids:
             print("channel:" + str(channel_id))
             date_now = datetime.datetime.now()
-            if date_now.hour == 15 and date_now.minute == 21:
+            if date_now.hour == 13 and date_now.minute == 57:
                 go_to_daily_checker = False
                 break
 
-            response = await UserAgent.main_parse_chat(channel_id)
+            response = await client.main_parse_chat(channel_id)
             async with async_session() as session:
                 async with session.begin():
                     channel = ChannelDAL(session)
@@ -45,7 +45,7 @@ async def grabber(client, go_to_daily_checker: bool = True):
             print(channelsId.channel_ids)
             print("chat:" + str(channel_id))
             date_now = datetime.datetime.now()
-            if date_now.hour == 15 and date_now.minute == 21:
+            if date_now.hour == 13 and date_now.minute == 57:
                 go_to_daily_checker = False
                 break
 
@@ -66,10 +66,10 @@ async def grabber(client, go_to_daily_checker: bool = True):
                     stored_channels = dict(
                         zip(stored_channels_usernames, stored_channels_ids)
                     )
-                    response = await UserAgent.parse_chat(
+                    response = await client.parse_chat(
                         channel_id, stored_channels, 180
                     )
-
+                    print("JJJ")
                     for post in response.posts:
                         await posts.create_post(
                             id_post=post.id_post,
@@ -79,7 +79,7 @@ async def grabber(client, go_to_daily_checker: bool = True):
                             views=post.views,
                             id_channel_forward_from=post.id_channel_forward_from,
                         )
-
+                    print("MMM")
                     for mention in response.mentions:
                         await mentions.create_mention(
                             id_mentioned_channel=mention.id_mentioned_channel,
@@ -101,13 +101,12 @@ async def daily_checker(client):
                 await sub_per_day.create_sub_per_day(
                     id_channel=response.id_channel,
                     subs=response.subs_total,
-                    date=datetime.date.today(),
+                    date=datetime.date.today() - datetime.timedelta(days=1),
                 )
     await asyncio.sleep(60)
 
 
 async def main():
-#    await UserAgent.main()
     client = UserAgent()
     while True:
         await grabber(client)
@@ -115,8 +114,12 @@ async def main():
 
 
 uvloop.install()
-asyncio.run(main())
 
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+loop.run_until_complete(main())
+# asyncio.get_event_loop().run_until_complete(main())
+# asyncio.run(main())
 
 # async def mmm():
 #     async with async_session() as session:
