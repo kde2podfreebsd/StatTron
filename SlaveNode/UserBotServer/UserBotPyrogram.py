@@ -70,7 +70,7 @@ class UserAgent(object):
 
                 pwd = (
                     await app.download_media(
-                        message=chat.photo.small_file_id, file_name=f"{chat.id}.jpg"
+                        message=chat.photo.small_file_id, file_name=f"{chat.id}.png"
                     )
                     if chat.photo is not None
                     else None

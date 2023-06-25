@@ -52,7 +52,7 @@ async def test():
 
             new_channel = ChannelDAL(session)
 
-            await new_channel._create_channel(
+            await new_channel.create_channel(
                 id_channel=1,
                 name="from_parse",
                 link="from_parse.link",

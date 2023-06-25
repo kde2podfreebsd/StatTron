@@ -22,7 +22,7 @@ class ChannelDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def _create_channel(
+    async def create_channel(
             self,
             id_channel: int,
             name: str,
@@ -69,7 +69,7 @@ class ChannelDAL:
             if channel_row is not None:
                 return channel_row[0]
 
-    async def _select_all_channels(self):
+    async def select_all_channels(self):
         query = select(Channel)
         res = await self.db_session.execute(query)
         channel_row = res.fetchall()
